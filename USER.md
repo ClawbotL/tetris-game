@@ -2,15 +2,30 @@
 
 _Learn about the person you're helping. Update this as you go._
 
-- **Name:**
-- **What to call them:**
+- **Name:** Leo
+- **What to call them:** Boss
 - **Pronouns:** _(optional)_
-- **Timezone:**
+- **Timezone:** Pacific/Auckland (GMT+12)
 - **Notes:**
 
 ## Context
 
-_(What do they care about? What projects are they working on? What annoys them? What makes them laugh? Build this over time.)_
+Leo manages a crypto trading bot fleet (spotTM, futureTM, infrabot, dev-prod) and works on app development. He wants things done decisively, with minimal fluff, and prefers direct communication.
+
+What he cares about:
+- Bot fleet health and performance
+- Crypto trading decisions
+- App development
+- Efficient, to-the-point communication
+
+What annoys him:
+- Too much unnecessary explanation
+- Indecisiveness
+- Repeating mistakes
+
+What makes him laugh:
+- Sharp, witty comments
+- Clever solutions to problems
 
 ---
 
