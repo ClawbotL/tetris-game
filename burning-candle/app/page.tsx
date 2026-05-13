@@ -1,7 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Candle from './components/Candle';
+import dynamic from 'next/dynamic';
+
+const Candle = dynamic(() => import('./components/Candle'), {
+  ssr: false,
+  loading: () => <div className="w-36 h-72 bg-gray-300 rounded-t-3xl rounded-b-lg animate-pulse" />,
+});
 
 export default function Home() {
   return (
@@ -24,18 +29,6 @@ export default function Home() {
 
         {/* Candle Component */}
         <Candle />
-
-        {/* CTA Button */}
-        <motion.button
-          className="mt-8 px-10 py-4 bg-[var(--cta)] text-white rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all cursor-pointer"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 1 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Explore Now
-        </motion.button>
       </main>
     </div>
   );
