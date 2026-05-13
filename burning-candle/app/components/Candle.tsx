@@ -2,9 +2,54 @@
 
 import { motion } from 'framer-motion';
 
+const Particle = ({ delay, size, xOffset }: { delay: number; size: number; xOffset: number }) => {
+  return (
+    <motion.div
+      className="absolute rounded-full bg-yellow-400/60"
+      style={{ width: size, height: size, left: `calc(50% + ${xOffset}px)` }}
+      initial={{ y: 0, opacity: 0 }}
+      animate={{
+        y: [-20, -150, -200],
+        opacity: [0, 0.8, 0],
+        scale: [1, 1.5, 0],
+      }}
+      transition={{
+        duration: 3 + Math.random() * 2,
+        repeat: Infinity,
+        ease: 'easeInOut',
+        delay: delay,
+      }}
+    />
+  );
+};
+
 export default function Candle() {
   return (
     <div className="relative flex flex-col items-center">
+      {/* Floating Particles */}
+      {[...Array(8)].map((_, i) => (
+        <Particle
+          key={i}
+          delay={i * 0.5}
+          size={4 + Math.random() * 6}
+          xOffset={-40 + Math.random() * 80}
+        />
+      ))}
+
+      {/* Glow */}
+      <motion.div
+        className="absolute -top-20 w-64 h-64 bg-radial-gradient from-yellow-400/40 via-orange-400/20 to-transparent rounded-full blur-3xl"
+        animate={{
+          scale: [1, 1.1, 0.95, 1],
+          opacity: [0.5, 0.7, 0.6, 0.5],
+        }}
+        transition={{
+          duration: 1.5,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+
       {/* Candle Body */}
       <motion.div
         className="relative w-32 h-64 bg-gradient-to-b from-[#D2691E] to-[#8B4513] rounded-t-3xl rounded-b-lg shadow-2xl overflow-hidden"
@@ -22,6 +67,11 @@ export default function Candle() {
           className="absolute -top-2 right-6 w-5 h-7 bg-gradient-to-b from-[#D2691E] to-[#CD853F] rounded-b-full"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+        />
+        <motion.div
+          className="absolute -top-2 left-16 w-4 h-6 bg-gradient-to-b from-[#D2691E] to-[#CD853F] rounded-b-full"
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
         />
 
         {/* Candle Top (Melted) */}
@@ -76,19 +126,16 @@ export default function Candle() {
         />
       </motion.div>
 
-      {/* Glow */}
+      {/* Candle Holder */}
       <motion.div
-        className="absolute -top-20 w-64 h-64 bg-radial-gradient from-yellow-400/40 via-orange-400/20 to-transparent rounded-full blur-3xl"
-        animate={{
-          scale: [1, 1.1, 0.95, 1],
-          opacity: [0.5, 0.7, 0.6, 0.5],
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
+        className="absolute -bottom-16 w-48 h-8 bg-gradient-to-b from-gray-700 to-gray-900 rounded-lg shadow-2xl"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        {/* Holder Base Detail */}
+        <div className="absolute inset-x-2 top-0 h-2 bg-gradient-to-b from-gray-600 to-gray-700 rounded-t-md" />
+      </motion.div>
     </div>
   );
 }
