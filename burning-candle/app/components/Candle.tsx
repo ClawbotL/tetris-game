@@ -1,10 +1,19 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
-const Particle = ({ delay, size, xOffset, isLit }: { delay: number; size: number; xOffset: number; isLit: boolean }) => {
+// Simple seeded random generator for deterministic particles
+const seededRandom = (seed: number) => {
+  let t = seed + 0x6D2B79F5;
+  t = Math.imul(t ^ t >>> 15, t | 1);
+  t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+};
+
+const Particle = ({ delay, size, xOffset, isLit, seed }: { delay: number; size: number; xOffset: number; isLit: boolean; seed: number }) => {
   if (!isLit) return null;
+  const duration = useMemo(() => 3 + seededRandom(seed) * 2, [seed]);
   return (
     <motion.div
       className="absolute rounded-full bg-yellow-400/60"
@@ -16,10 +25,10 @@ const Particle = ({ delay, size, xOffset, isLit }: { delay: number; size: number
         scale: [1, 1.5, 0],
       }}
       transition={{
-        duration: 3 + Math.random() * 2,
+        duration,
         repeat: Infinity,
         ease: 'easeInOut',
-        delay: delay,
+        delay,
       }}
     />
   );
@@ -28,16 +37,31 @@ const Particle = ({ delay, size, xOffset, isLit }: { delay: number; size: number
 export default function Candle() {
   const [isLit, setIsLit] = useState(true);
 
+  // Generate deterministic particles
+  const particles = useMemo(() => {
+    return [...Array(12)].map((_, i) => {
+      const seed = i * 12345;
+      return {
+        key: i,
+        delay: i * 0.4,
+        size: 3 + seededRandom(seed) * 7,
+        xOffset: -50 + seededRandom(seed + 1) * 100,
+        seed,
+      };
+    });
+  }, []);
+
   return (
     <div className="relative flex flex-col items-center gap-8">
       {/* Floating Particles */}
-      {[...Array(12)].map((_, i) => (
+      {particles.map((p) => (
         <Particle
-          key={i}
-          delay={i * 0.4}
-          size={3 + Math.random() * 7}
-          xOffset={-50 + Math.random() * 100}
+          key={p.key}
+          delay={p.delay}
+          size={p.size}
+          xOffset={p.xOffset}
           isLit={isLit}
+          seed={p.seed}
         />
       ))}
 
