@@ -4,7 +4,7 @@
   "description": "A fully-featured Tetris game built with vanilla HTML, CSS, and JavaScript.",
   "main": "index.html",
   "scripts": {
-    "start": "python3 -m http.server 8000",
+    "start": "python3 -m http.server 8000 --bind 0.0.0.0",
     "test": "echo \"No tests specified\" && exit 0"
   },
   "keywords": ["tetris", "game"],
