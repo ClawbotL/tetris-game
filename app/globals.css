@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #0F0F23;
+  --foreground: #E2E8F0;
+  --primary: #7C3AED;
+  --secondary: #A78BFA;
+  --cta: #F43F5E;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-cta: var(--cta);
+  --font-press-start: "Press Start 2P", system-ui;
+  --font-vt323: "VT323", monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-vt323);
+  font-size: 20px;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* CRT Scanline Effect */
+.crt-overlay::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.1) 2px,
+    rgba(0, 0, 0, 0.1) 4px
+  );
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.3;
+  animation: scanline 6s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+/* Neon Glow Effects */
+.neon-text-primary {
+  text-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary), 0 0 20px var(--primary);
+}
+
+.neon-text-cta {
+  text-shadow: 0 0 5px var(--cta), 0 0 10px var(--cta), 0 0 20px var(--cta);
+}
+
+.neon-border-primary {
+  box-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary);
+}
+
+.neon-border-cta {
+  box-shadow: 0 0 5px var(--cta), 0 0 10px var(--cta);
+}
+
+/* Tetris Grid Cell Styles */
+.tetris-cell {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tetris-cell-filled-I {
+  background: #00FFFF;
+  box-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF;
+}
+
+.tetris-cell-filled-O {
+  background: #FFFF00;
+  box-shadow: 0 0 5px #FFFF00, 0 0 10px #FFFF00;
+}
+
+.tetris-cell-filled-T {
+  background: #A020F0;
+  box-shadow: 0 0 5px #A020F0, 0 0 10px #A020F0;
+}
+
+.tetris-cell-filled-S {
+  background: #00FF00;
+  box-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00;
+}
+
+.tetris-cell-filled-Z {
+  background: #FF0000;
+  box-shadow: 0 0 5px #FF0000, 0 0 10px #FF0000;
+}
+
+.tetris-cell-filled-J {
+  background: #0000FF;
+  box-shadow: 0 0 5px #0000FF, 0 0 10px #0000FF;
+}
+
+.tetris-cell-filled-L {
+  background: #FFA500;
+  box-shadow: 0 0 5px #FFA500, 0 0 10px #FFA500;
+}
+
+/* Button Styles */
+.game-button {
+  font-family: var(--font-press-start);
+  font-size: 12px;
+  padding: 12px 24px;
+  border: 2px solid var(--cta);
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.game-button:hover {
+  background: var(--cta);
+  color: white;
+}
+
+.game-button:active {
+  transform: scale(0.98);
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  body {
+    font-size: 18px;
+  }
+  .game-button {
+    font-size: 10px;
+    padding: 10px 20px;
+  }
+}
