@@ -165,9 +165,12 @@ export default function TetrisGame() {
     while (!checkCollision(grid, currentPiece, 0, dropAmount + 1)) {
       dropAmount++;
     }
+    // Update position first, then lock immediately
     setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, y: prev.pos.y + dropAmount } }));
-    setScore(score + dropAmount * 2);
-  }, [grid, currentPiece, score]);
+    setScore(prev => prev + dropAmount * 2);
+    // Use setTimeout to let React update the state first before locking
+    setTimeout(() => lockPiece(), 0);
+  }, [grid, currentPiece, lockPiece]);
 
   const move = useCallback(
     (dir: number) => {
@@ -241,7 +244,7 @@ export default function TetrisGame() {
           break;
         case 'ArrowDown':
           drop();
-          setScore(score + 1);
+          setScore(prev => prev + 1);
           break;
         case 'ArrowUp':
           rotate();
@@ -258,11 +261,13 @@ export default function TetrisGame() {
   }, [gameOver, isPaused, move, drop, hardDrop, rotate, score]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
     const touch = e.touches[0];
     touchStartRef.current = { x: touch.clientX, y: touch.clientY };
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
     if (gameOver || isPaused || !touchStartRef.current) return;
     const touch = e.changedTouches[0];
     const deltaX = touch.clientX - touchStartRef.current.x;
@@ -277,6 +282,9 @@ export default function TetrisGame() {
     } else {
       if (deltaY > 50) {
         hardDrop();
+      } else if (deltaY > 20) {
+        drop();
+        setScore(prev => prev + 1);
       } else if (deltaY < -30) {
         rotate();
       }
@@ -363,7 +371,7 @@ export default function TetrisGame() {
 
         {/* Main Game Grid */}
         <div
-          className="flex flex-col items-center gap-4"
+          className="flex flex-col items-center gap-4 touch-none"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
@@ -377,21 +385,21 @@ export default function TetrisGame() {
           <div className="mt-4 flex flex-col gap-2 w-full max-w-xs md:hidden">
             <div className="flex justify-center gap-6">
               <button
-                className="game-button rounded-full w-14 h-14 flex items-center justify-center"
+                className="game-button rounded-full w-14 h-14 flex items-center justify-center touch-none"
                 onClick={() => move(-1)}
                 disabled={gameOver || isPaused}
               >
                 ←
               </button>
               <button
-                className="game-button rounded-full w-14 h-14 flex items-center justify-center"
+                className="game-button rounded-full w-14 h-14 flex items-center justify-center touch-none"
                 onClick={rotate}
                 disabled={gameOver || isPaused}
               >
                 ↻
               </button>
               <button
-                className="game-button rounded-full w-14 h-14 flex items-center justify-center"
+                className="game-button rounded-full w-14 h-14 flex items-center justify-center touch-none"
                 onClick={() => move(1)}
                 disabled={gameOver || isPaused}
               >
@@ -400,14 +408,21 @@ export default function TetrisGame() {
             </div>
             <div className="flex justify-center gap-4 mt-2">
               <button
-                className="game-button rounded-md"
+                className="game-button rounded-md touch-none"
                 onClick={() => { setIsPaused(prev => !prev); }}
                 disabled={gameOver}
               >
                 {isPaused ? 'RESUME' : 'PAUSE'}
               </button>
               <button
-                className="game-button rounded-md"
+                className="game-button rounded-md touch-none"
+                onClick={() => { drop(); setScore(prev => prev + 1); }}
+                disabled={gameOver || isPaused}
+              >
+                ↓
+              </button>
+              <button
+                className="game-button rounded-md touch-none"
                 onClick={hardDrop}
                 disabled={gameOver || isPaused}
               >
@@ -415,7 +430,7 @@ export default function TetrisGame() {
               </button>
             </div>
             <button
-              className="game-button neon-border-cta rounded-md mt-2"
+              className="game-button neon-border-cta rounded-md mt-2 touch-none"
               onClick={resetGame}
             >
               NEW GAME
