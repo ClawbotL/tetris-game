@@ -78,63 +78,91 @@ body {
 
 /* Tetris Grid Cell Styles */
 .tetris-cell {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
 }
 
 .tetris-cell-filled-I {
-  background: #00FFFF;
-  box-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF;
+  background: linear-gradient(135deg, #00FFFF, #00CED1);
+  box-shadow: 0 0 8px #00FFFF, 0 0 16px #00FFFF, inset 0 2px 4px rgba(255,255,255,0.3);
 }
 
 .tetris-cell-filled-O {
-  background: #FFFF00;
-  box-shadow: 0 0 5px #FFFF00, 0 0 10px #FFFF00;
+  background: linear-gradient(135deg, #FFFF00, #FFD700);
+  box-shadow: 0 0 8px #FFFF00, 0 0 16px #FFFF00, inset 0 2px 4px rgba(255,255,255,0.3);
 }
 
 .tetris-cell-filled-T {
-  background: #A020F0;
-  box-shadow: 0 0 5px #A020F0, 0 0 10px #A020F0;
+  background: linear-gradient(135deg, #A020F0, #8A2BE2);
+  box-shadow: 0 0 8px #A020F0, 0 0 16px #A020F0, inset 0 2px 4px rgba(255,255,255,0.3);
 }
 
 .tetris-cell-filled-S {
-  background: #00FF00;
-  box-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00;
+  background: linear-gradient(135deg, #00FF00, #32CD32);
+  box-shadow: 0 0 8px #00FF00, 0 0 16px #00FF00, inset 0 2px 4px rgba(255,255,255,0.3);
 }
 
 .tetris-cell-filled-Z {
-  background: #FF0000;
-  box-shadow: 0 0 5px #FF0000, 0 0 10px #FF0000;
+  background: linear-gradient(135deg, #FF0000, #DC143C);
+  box-shadow: 0 0 8px #FF0000, 0 0 16px #FF0000, inset 0 2px 4px rgba(255,255,255,0.3);
 }
 
 .tetris-cell-filled-J {
-  background: #0000FF;
-  box-shadow: 0 0 5px #0000FF, 0 0 10px #0000FF;
+  background: linear-gradient(135deg, #0000FF, #4169E1);
+  box-shadow: 0 0 8px #0000FF, 0 0 16px #0000FF, inset 0 2px 4px rgba(255,255,255,0.3);
 }
 
 .tetris-cell-filled-L {
-  background: #FFA500;
-  box-shadow: 0 0 5px #FFA500, 0 0 10px #FFA500;
+  background: linear-gradient(135deg, #FFA500, #FF8C00);
+  box-shadow: 0 0 8px #FFA500, 0 0 16px #FFA500, inset 0 2px 4px rgba(255,255,255,0.3);
 }
 
 /* Button Styles */
 .game-button {
   font-family: var(--font-press-start);
   font-size: 12px;
-  padding: 12px 24px;
+  padding: 14px 28px;
   border: 2px solid var(--cta);
-  background: transparent;
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(124, 58, 237, 0.1));
   color: var(--foreground);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.game-button:hover::before {
+  left: 100%;
 }
 
 .game-button:hover {
-  background: var(--cta);
+  background: linear-gradient(135deg, var(--cta), var(--primary));
   color: white;
+  box-shadow: 0 0 20px var(--cta), 0 0 40px var(--primary);
+  transform: translateY(-2px);
 }
 
 .game-button:active {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 0 10px var(--cta);
+}
+
+.game-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Responsive Typography */
@@ -144,6 +172,6 @@ body {
   }
   .game-button {
     font-size: 10px;
-    padding: 10px 20px;
+    padding: 12px 24px;
   }
 }

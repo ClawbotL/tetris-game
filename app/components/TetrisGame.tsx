@@ -91,6 +91,8 @@ export default function TetrisGame() {
   const lastDropTimeRef = useRef<number>(0);
   const requestRef = useRef<number | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const lastActionTimeRef = useRef(0);
+  const actionCooldown = 100; // 100ms cooldown between actions to prevent double triggers
 
   const resetGame = useCallback(() => {
     setGrid(createEmptyGrid());
@@ -102,6 +104,7 @@ export default function TetrisGame() {
     setGameOver(false);
     setIsPaused(false);
     dropIntervalRef.current = 1000;
+    lastActionTimeRef.current = 0;
   }, []);
 
   const lockPiece = useCallback(() => {
@@ -153,6 +156,10 @@ export default function TetrisGame() {
   }, [currentPiece, nextPiece, level]);
 
   const drop = useCallback(() => {
+    const now = Date.now();
+    if (now - lastActionTimeRef.current < actionCooldown) return;
+    lastActionTimeRef.current = now;
+    
     if (!checkCollision(grid, currentPiece, 0, 1)) {
       setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, y: prev.pos.y + 1 } }));
     } else {
@@ -161,6 +168,10 @@ export default function TetrisGame() {
   }, [grid, currentPiece, lockPiece]);
 
   const hardDrop = useCallback(() => {
+    const now = Date.now();
+    if (now - lastActionTimeRef.current < actionCooldown) return;
+    lastActionTimeRef.current = now;
+    
     let dropAmount = 0;
     while (!checkCollision(grid, currentPiece, 0, dropAmount + 1)) {
       dropAmount++;
@@ -174,6 +185,10 @@ export default function TetrisGame() {
 
   const move = useCallback(
     (dir: number) => {
+      const now = Date.now();
+      if (now - lastActionTimeRef.current < actionCooldown) return;
+      lastActionTimeRef.current = now;
+      
       if (!checkCollision(grid, currentPiece, dir, 0)) {
         setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, x: prev.pos.x + dir } }));
       }
@@ -182,6 +197,10 @@ export default function TetrisGame() {
   );
 
   const rotate = useCallback(() => {
+    const now = Date.now();
+    if (now - lastActionTimeRef.current < actionCooldown) return;
+    lastActionTimeRef.current = now;
+    
     const rotated = rotateMatrix(currentPiece.shape);
     const newPiece = { ...currentPiece, shape: rotated };
     // Wall kick
@@ -304,12 +323,12 @@ export default function TetrisGame() {
     });
 
     return (
-      <div className="grid gap-[2px] bg-background border-2 border-primary neon-border-primary p-2 rounded-md" style={{ gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`, width: 'min(350px, 90vw)' }}>
+      <div className="grid gap-[2px] bg-background border-2 border-primary neon-border-primary p-2 rounded-lg" style={{ gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`, width: 'min(350px, 90vw)' }}>
         {displayGrid.map((row, y) =>
           row.map((cell, x) => (
             <div
               key={`${x}-${y}`}
-              className={`w-full aspect-square tetris-cell ${cell ? `tetris-cell-filled-${cell}` : ''}`}
+              className={`w-full aspect-square tetris-cell rounded-sm ${cell ? `tetris-cell-filled-${cell}` : ''}`}
             />
           ))
         )}
@@ -322,7 +341,7 @@ export default function TetrisGame() {
     const padding = size - nextPiece.shape.length;
     const padLeft = Math.floor(padding / 2);
     return (
-      <div className="grid gap-[2px] bg-background border border-secondary p-2 rounded-md" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
+      <div className="grid gap-[2px] bg-background border border-secondary p-3 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
         {Array.from({ length: size }).map((_, y) =>
           Array.from({ length: size }).map((_, x) => {
             const cellY = y - padLeft;
@@ -337,7 +356,7 @@ export default function TetrisGame() {
             return (
               <div
                 key={`${x}-${y}`}
-                className={`w-6 h-6 tetris-cell ${cell ? `tetris-cell-filled-${cell}` : ''}`}
+                className={`w-8 h-8 tetris-cell rounded-sm ${cell ? `tetris-cell-filled-${cell}` : ''}`}
               />
             );
           })
@@ -347,59 +366,59 @@ export default function TetrisGame() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 relative">
-      <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-6 items-center justify-center">
-        {/* Left Panel: Score, Next Piece (Desktop) / Top Panel (Mobile) */}
-        <div className="flex flex-row md:flex-col gap-4 w-full md:w-auto justify-center md:justify-start items-center">
-          <div className="bg-background border border-primary neon-border-primary p-4 rounded-md text-center">
-            <h2 className="font-press-start text-xs mb-2 neon-text-primary">SCORE</h2>
-            <p className="font-vt323 text-4xl">{score}</p>
+    <div className="min-h-screen bg-gradient-to-br from-[#0F0F23] via-[#1A1A3E] to-[#0F0F23] text-foreground flex flex-col items-center justify-center p-4 relative">
+      <div className="w-full max-w-7xl flex flex-col xl:flex-row gap-8 items-center justify-center">
+        {/* Left Panel: Score, Level, Lines */}
+        <div className="flex flex-col gap-4 w-full xl:w-auto">
+          <div className="bg-background/80 backdrop-blur-sm border border-primary neon-border-primary p-6 rounded-xl text-center">
+            <h2 className="font-press-start text-xs mb-3 neon-text-primary">SCORE</h2>
+            <p className="font-vt323 text-5xl">{score}</p>
           </div>
-          <div className="bg-background border border-primary neon-border-primary p-4 rounded-md text-center">
-            <h2 className="font-press-start text-xs mb-2 neon-text-primary">LEVEL</h2>
-            <p className="font-vt323 text-4xl">{level}</p>
+          <div className="bg-background/80 backdrop-blur-sm border border-primary neon-border-primary p-6 rounded-xl text-center">
+            <h2 className="font-press-start text-xs mb-3 neon-text-primary">LEVEL</h2>
+            <p className="font-vt323 text-5xl">{level}</p>
           </div>
-          <div className="bg-background border border-primary neon-border-primary p-4 rounded-md text-center">
-            <h2 className="font-press-start text-xs mb-2 neon-text-primary">LINES</h2>
-            <p className="font-vt323 text-4xl">{linesCleared}</p>
-          </div>
-          <div className="bg-background border border-secondary p-4 rounded-md text-center hidden md:block">
-            <h2 className="font-press-start text-xs mb-2">NEXT</h2>
-            {renderNextPiece()}
+          <div className="bg-background/80 backdrop-blur-sm border border-primary neon-border-primary p-6 rounded-xl text-center">
+            <h2 className="font-press-start text-xs mb-3 neon-text-primary">LINES</h2>
+            <p className="font-vt323 text-5xl">{linesCleared}</p>
           </div>
         </div>
 
-        {/* Main Game Grid */}
+        {/* Main Game Area */}
         <div
-          className="flex flex-col items-center gap-4 touch-none"
+          className="flex flex-col items-center gap-6 touch-none"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          <h1 className="font-press-start text-2xl md:text-4xl neon-text-cta mb-4">TETRIS</h1>
-          <div className="block md:hidden mb-4">
-            <h2 className="font-press-start text-xs mb-2 text-center">NEXT</h2>
-            <div className="flex justify-center">{renderNextPiece()}</div>
+          <h1 className="font-press-start text-3xl md:text-5xl neon-text-cta mb-2">TETRIS</h1>
+          
+          {/* Next Piece (Mobile top, Desktop here) */}
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="font-press-start text-xs mb-1">NEXT</h2>
+            {renderNextPiece()}
           </div>
+          
           {renderGrid()}
+          
           {/* Controls Buttons (for mobile/touch) */}
-          <div className="mt-4 flex flex-col gap-2 w-full max-w-xs md:hidden">
-            <div className="flex justify-center gap-6">
+          <div className="mt-2 flex flex-col gap-3 w-full max-w-sm md:hidden">
+            <div className="flex justify-center gap-8">
               <button
-                className="game-button rounded-full w-14 h-14 flex items-center justify-center touch-none"
+                className="game-button rounded-full w-16 h-16 flex items-center justify-center text-2xl touch-none shadow-lg"
                 onClick={() => move(-1)}
                 disabled={gameOver || isPaused}
               >
                 ←
               </button>
               <button
-                className="game-button rounded-full w-14 h-14 flex items-center justify-center touch-none"
+                className="game-button rounded-full w-16 h-16 flex items-center justify-center text-2xl touch-none shadow-lg"
                 onClick={rotate}
                 disabled={gameOver || isPaused}
               >
                 ↻
               </button>
               <button
-                className="game-button rounded-full w-14 h-14 flex items-center justify-center touch-none"
+                className="game-button rounded-full w-16 h-16 flex items-center justify-center text-2xl touch-none shadow-lg"
                 onClick={() => move(1)}
                 disabled={gameOver || isPaused}
               >
@@ -408,21 +427,21 @@ export default function TetrisGame() {
             </div>
             <div className="flex justify-center gap-4 mt-2">
               <button
-                className="game-button rounded-md touch-none"
+                className="game-button rounded-lg px-6 py-3 touch-none shadow-lg"
                 onClick={() => { setIsPaused(prev => !prev); }}
                 disabled={gameOver}
               >
                 {isPaused ? 'RESUME' : 'PAUSE'}
               </button>
               <button
-                className="game-button rounded-md touch-none"
+                className="game-button rounded-lg px-6 py-3 touch-none shadow-lg"
                 onClick={() => { drop(); setScore(prev => prev + 1); }}
                 disabled={gameOver || isPaused}
               >
                 ↓
               </button>
               <button
-                className="game-button rounded-md touch-none"
+                className="game-button rounded-lg px-6 py-3 touch-none shadow-lg"
                 onClick={hardDrop}
                 disabled={gameOver || isPaused}
               >
@@ -430,24 +449,25 @@ export default function TetrisGame() {
               </button>
             </div>
             <button
-              className="game-button neon-border-cta rounded-md mt-2 touch-none"
+              className="game-button neon-border-cta rounded-lg px-8 py-4 mt-2 touch-none shadow-lg text-lg"
               onClick={resetGame}
             >
               NEW GAME
             </button>
           </div>
+          
           {/* Desktop Controls */}
-          <div className="hidden md:flex flex-col gap-3 mt-4">
-            <div className="flex gap-4">
+          <div className="hidden md:flex flex-col gap-4 mt-4">
+            <div className="flex gap-6">
               <button
-                className="game-button"
+                className="game-button px-8 py-4 rounded-lg shadow-lg"
                 onClick={() => { setIsPaused(prev => !prev); }}
                 disabled={gameOver}
               >
                 {isPaused ? 'RESUME' : 'PAUSE'}
               </button>
               <button
-                className="game-button"
+                className="game-button px-8 py-4 rounded-lg shadow-lg"
                 onClick={hardDrop}
                 disabled={gameOver || isPaused}
               >
@@ -455,7 +475,7 @@ export default function TetrisGame() {
               </button>
             </div>
             <button
-              className="game-button neon-border-cta"
+              className="game-button neon-border-cta px-10 py-4 rounded-lg shadow-lg text-lg"
               onClick={resetGame}
             >
               NEW GAME
@@ -463,10 +483,10 @@ export default function TetrisGame() {
           </div>
         </div>
 
-        {/* Right Panel: Instructions (Desktop only) */}
-        <div className="bg-background border border-secondary p-5 rounded-md hidden lg:block">
-          <h2 className="font-press-start text-xs mb-4 neon-text-primary">CONTROLS</h2>
-          <ul className="space-y-3 text-lg">
+        {/* Right Panel: Instructions */}
+        <div className="bg-background/80 backdrop-blur-sm border border-secondary p-6 rounded-xl hidden xl:block">
+          <h2 className="font-press-start text-xs mb-5 neon-text-primary">CONTROLS</h2>
+          <ul className="space-y-4 text-xl">
             <li><strong>← →</strong> Move Left/Right</li>
             <li><strong>↑</strong> Rotate Piece</li>
             <li><strong>↓</strong> Soft Drop</li>
@@ -478,12 +498,12 @@ export default function TetrisGame() {
 
       {/* Game Over Overlay */}
       {gameOver && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-background border-2 border-cta neon-border-cta p-8 rounded-md text-center">
-            <h2 className="font-press-start text-2xl neon-text-cta mb-6">GAME OVER</h2>
-            <p className="text-3xl mb-8">Final Score: <span className="font-bold text-cta">{score}</span></p>
+        <div className="fixed inset-0 bg-black/85 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-background/95 backdrop-blur-md border-2 border-cta neon-border-cta p-10 rounded-xl text-center">
+            <h2 className="font-press-start text-3xl neon-text-cta mb-8">GAME OVER</h2>
+            <p className="text-4xl mb-10">Final Score: <span className="font-bold text-cta">{score}</span></p>
             <button
-              className="game-button neon-border-cta"
+              className="game-button neon-border-cta px-10 py-5 rounded-lg shadow-lg text-xl"
               onClick={resetGame}
             >
               PLAY AGAIN
@@ -494,11 +514,11 @@ export default function TetrisGame() {
 
       {/* Pause Overlay */}
       {isPaused && !gameOver && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-background border-2 border-primary neon-border-primary p-8 rounded-md text-center">
-            <h2 className="font-press-start text-3xl neon-text-primary mb-6">PAUSED</h2>
+        <div className="fixed inset-0 bg-black/85 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-background/95 backdrop-blur-md border-2 border-primary neon-border-primary p-10 rounded-xl text-center">
+            <h2 className="font-press-start text-4xl neon-text-primary mb-8">PAUSED</h2>
             <button
-              className="game-button"
+              className="game-button px-10 py-5 rounded-lg shadow-lg text-xl"
               onClick={() => setIsPaused(false)}
             >
               RESUME
