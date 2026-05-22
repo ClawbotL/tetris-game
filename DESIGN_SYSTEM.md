@@ -1,52 +1,72 @@
-## Design System: Tetris Game
+# Tetris Game UI Design System
 
-### Pattern
-- **Name:** Horizontal Scroll Journey
-- **Conversion Focus:** Immersive product discovery. High engagement. Keep navigation visible.
-- **CTA Placement:** Floating Sticky CTA or End of Horizontal Track
-- **Color Strategy:** Continuous palette transition. Chapter colors. Progress bar #000000.
-- **Sections:** 1. Intro (Vertical), 2. The Journey (Horizontal Track), 3. Detail Reveal, 4. Vertical Footer
+## Design Philosophy
+A clean, balanced, and modern take on the classic Tetris game. Focuses on readability, visual hierarchy, and pleasant gameplay experience.
 
-### Style
-- **Name:** Retro-Futurism
-- **Keywords:** Vintage sci-fi, 80s aesthetic, neon glow, geometric patterns, CRT scanlines, pixel art, cyberpunk, synthwave
-- **Best For:** Gaming, entertainment, music platforms, tech brands, artistic projects, nostalgic, cyberpunk
-- **Performance:** ⚠ Moderate | **Accessibility:** ⚠ High contrast/strain
+## Color Palette
 
-### Colors
-| Role | Hex |
-|------|-----|
-| Primary | #7C3AED |
-| Secondary | #A78BFA |
-| CTA | #F43F5E |
-| Background | #0F0F23 |
-| Text | #E2E8F0 |
+### Core Colors
+| Role | Hex | Usage |
+|------|-----|-------|
+| **Background** | `#0F172A` | Main background gradient |
+| **Background Dark** | `#020617` | Darker shade for gradient |
+| **Foreground** | `#F8FAFC` | Primary text |
+| **Primary** | `#6366F1` | Main actions, focus |
+| **Primary Light** | `#818CF8` | Hover states |
+| **Secondary** | `#10B981` | Success, alternate actions |
+| **Secondary Light** | `#34D399` | Hover for secondary |
+| **Accent** | `#F59E0B` | Highlights, important text |
+| **Danger** | `#EF4444` | Game over, errors |
 
-*Notes: Neon purple + rose action*
+### Grid/Panel Colors
+| Role | Hex | Usage |
+|------|-----|-------|
+| **Grid BG** | `#1E293B` | Background for grid cells |
+| **Grid Border** | `#334155` | Cell borders |
 
-### Typography
-- **Heading:** Press Start 2P
-- **Body:** VT323
-- **Mood:** pixel, retro, gaming, 8-bit, nostalgic, arcade
-- **Best For:** Pixel art games, retro websites, creative portfolios
-- **Google Fonts:** https://fonts.google.com/share?selection.family=Press+Start+2P|VT323
-- **CSS Import:**
-```css
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
-```
+### Tetromino Colors
+| Piece | Hex | Color |
+|-------|-----|-------|
+| **I** | `#22D3EE` | Cyan |
+| **O** | `#FACC15` | Yellow |
+| **T** | `#A855F7` | Purple |
+| **S** | `#34D399` | Green |
+| **Z** | `#EF4444` | Red |
+| **J** | `#3B82F6` | Blue |
+| **L** | `#F97316` | Orange |
 
-### Key Effects
-CRT scanlines (::before overlay), neon glow (text-shadow+box-shadow), glitch effects (skew/offset keyframes)
+## Typography
+- **Heading/Game Text**: Press Start 2P
+- **Body/Stats**: VT323
+- **Mood**: Retro yet clean, modern gaming feel
 
-### Avoid (Anti-patterns)
-- Minimalist design
-- Static assets
+## Key Components
 
-### Pre-Delivery Checklist
-- [ ] No emojis as icons (use SVG: Heroicons/Lucide)
-- [ ] cursor-pointer on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard nav
-- [ ] prefers-reduced-motion respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
+### Game Panel
+- Semi-transparent background (`rgba(30, 41, 59, 0.7)`)
+- Backdrop blur (10px)
+- Subtle border (`rgba(99, 102, 241, 0.2)`)
+- 12px border radius
+
+### Buttons
+- Base: Semi-transparent dark slate, 8px radius
+- Primary: Gradient indigo, white text
+- Accent: Gradient amber, white text
+- Hover: Subtle elevation + shadow
+
+### Grid Cells
+- 2px border radius
+- Subtle borders
+- Soft inner shadows on filled pieces
+- Transparent ghost pieces
+
+## Layout
+- Responsive 3-column on desktop
+- Stacked on mobile
+- Clean spacing between elements
+- Visual hierarchy: Grid > Stats > Hold/Next
+
+## Animations
+- Smooth button transitions (0.15s)
+- Row clear animation (0.25s)
+- Subtle cell transitions

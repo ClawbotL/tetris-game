@@ -2,19 +2,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0A0A1A;
-  --foreground: #E2E8F0;
-  --primary: #7C3AED;
-  --secondary: #A78BFA;
-  --cta: #F43F5E;
+  --background: #0F172A;
+  --background-dark: #020617;
+  --foreground: #F8FAFC;
+  --primary: #6366F1;
+  --primary-light: #818CF8;
+  --secondary: #10B981;
+  --secondary-light: #34D399;
+  --accent: #F59E0B;
+  --danger: #EF4444;
+  --grid-bg: #1E293B;
+  --grid-border: #334155;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
   --color-secondary: var(--secondary);
-  --color-cta: var(--cta);
+  --color-secondary-light: var(--secondary-light);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-grid-bg: var(--grid-bg);
+  --color-grid-border: var(--grid-border);
   --font-press-start: "Press Start 2P", system-ui;
   --font-vt323: "VT323", monospace;
 }
@@ -26,7 +37,7 @@
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(135deg, var(--background-dark) 0%, var(--background) 100%);
   color: var(--foreground);
   font-family: var(--font-vt323);
   font-size: 20px;
@@ -37,15 +48,18 @@ body {
 
 /* Row Clear Animation */
 @keyframes row-clear {
-  0%, 100% {
-    box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #fff;
-    background: #fff;
-    transform: scale(1.05);
+  0% {
+    transform: scaleX(1);
+    opacity: 1;
   }
   50% {
-    box-shadow: 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #fff, 0 0 50px #fff;
-    background: #fff;
-    transform: scale(1.1);
+    transform: scaleX(1.05);
+    opacity: 0.8;
+    box-shadow: 0 0 20px var(--accent);
+  }
+  100% {
+    transform: scaleX(0.9);
+    opacity: 0;
   }
 }
 
@@ -53,150 +67,162 @@ body {
   animation: row-clear 0.25s ease-in-out;
 }
 
-/* Neon Glow Effects */
-.neon-text-primary {
-  text-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary), 0 0 20px var(--primary);
+/* Text Glow Effects */
+.text-glow-primary {
+  text-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
 }
 
-.neon-text-secondary {
-  text-shadow: 0 0 5px var(--secondary), 0 0 10px var(--secondary), 0 0 20px var(--secondary);
+.text-glow-secondary {
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
-.neon-text-cta {
-  text-shadow: 0 0 5px var(--cta), 0 0 10px var(--cta), 0 0 20px var(--cta);
+.text-glow-accent {
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
 }
 
-.neon-border-primary {
-  box-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary);
-}
-
-.neon-border-secondary {
-  box-shadow: 0 0 5px var(--secondary), 0 0 10px var(--secondary);
-}
-
-.neon-border-cta {
-  box-shadow: 0 0 5px var(--cta), 0 0 10px var(--cta);
+/* Panel Styles */
+.game-panel {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 12px;
 }
 
 /* Tetris Grid Cell Styles */
 .tetris-cell {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  border-radius: 2px;
+  background: rgba(30, 41, 59, 0.4);
+  transition: all 0.1s ease;
 }
 
 /* Ghost piece styles */
 .tetris-cell-ghost-I {
-  background: rgba(0, 255, 255, 0.15);
-  border: 1px dashed rgba(0, 255, 255, 0.4);
+  background: rgba(34, 211, 238, 0.2);
+  border: 1px solid rgba(34, 211, 238, 0.3);
 }
 .tetris-cell-ghost-O {
-  background: rgba(255, 255, 0, 0.15);
-  border: 1px dashed rgba(255, 255, 0, 0.4);
+  background: rgba(250, 204, 21, 0.2);
+  border: 1px solid rgba(250, 204, 21, 0.3);
 }
 .tetris-cell-ghost-T {
-  background: rgba(160, 32, 240, 0.15);
-  border: 1px dashed rgba(160, 32, 240, 0.4);
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.3);
 }
 .tetris-cell-ghost-S {
-  background: rgba(0, 255, 0, 0.15);
-  border: 1px dashed rgba(0, 255, 0, 0.4);
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 .tetris-cell-ghost-Z {
-  background: rgba(255, 0, 0, 0.15);
-  border: 1px dashed rgba(255, 0, 0, 0.4);
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 .tetris-cell-ghost-J {
-  background: rgba(0, 0, 255, 0.15);
-  border: 1px dashed rgba(0, 0, 255, 0.4);
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 .tetris-cell-ghost-L {
-  background: rgba(255, 165, 0, 0.15);
-  border: 1px dashed rgba(255, 165, 0, 0.4);
+  background: rgba(249, 115, 22, 0.2);
+  border: 1px solid rgba(249, 115, 22, 0.3);
 }
 
 .tetris-cell-filled-I {
-  background: linear-gradient(135deg, #00FFFF, #00CED1);
-  box-shadow: 0 0 8px #00FFFF, 0 0 16px #00FFFF, inset 0 2px 4px rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, #06B6D4, #22D3EE);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), 0 0 6px rgba(6, 182, 212, 0.5);
+  border-color: rgba(34, 211, 238, 0.6);
 }
 
 .tetris-cell-filled-O {
-  background: linear-gradient(135deg, #FFFF00, #FFD700);
-  box-shadow: 0 0 8px #FFFF00, 0 0 16px #FFFF00, inset 0 2px 4px rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, #EAB308, #FACC15);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), 0 0 6px rgba(250, 204, 21, 0.5);
+  border-color: rgba(250, 204, 21, 0.6);
 }
 
 .tetris-cell-filled-T {
-  background: linear-gradient(135deg, #A020F0, #8A2BE2);
-  box-shadow: 0 0 8px #A020F0, 0 0 16px #A020F0, inset 0 2px 4px rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, #9333EA, #A855F7);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), 0 0 6px rgba(168, 85, 247, 0.5);
+  border-color: rgba(168, 85, 247, 0.6);
 }
 
 .tetris-cell-filled-S {
-  background: linear-gradient(135deg, #00FF00, #32CD32);
-  box-shadow: 0 0 8px #00FF00, 0 0 16px #00FF00, inset 0 2px 4px rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, #22C55E, #34D399);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), 0 0 6px rgba(34, 197, 94, 0.5);
+  border-color: rgba(34, 197, 94, 0.6);
 }
 
 .tetris-cell-filled-Z {
-  background: linear-gradient(135deg, #FF0000, #DC143C);
-  box-shadow: 0 0 8px #FF0000, 0 0 16px #FF0000, inset 0 2px 4px rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, #DC2626, #EF4444);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), 0 0 6px rgba(239, 68, 68, 0.5);
+  border-color: rgba(239, 68, 68, 0.6);
 }
 
 .tetris-cell-filled-J {
-  background: linear-gradient(135deg, #0000FF, #4169E1);
-  box-shadow: 0 0 8px #0000FF, 0 0 16px #0000FF, inset 0 2px 4px rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, #2563EB, #3B82F6);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), 0 0 6px rgba(59, 130, 246, 0.5);
+  border-color: rgba(59, 130, 246, 0.6);
 }
 
 .tetris-cell-filled-L {
-  background: linear-gradient(135deg, #FFA500, #FF8C00);
-  box-shadow: 0 0 8px #FFA500, 0 0 16px #FFA500, inset 0 2px 4px rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, #EA580C, #F97316);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), 0 0 6px rgba(249, 115, 22, 0.5);
+  border-color: rgba(249, 115, 22, 0.6);
 }
 
 /* Button Styles */
 .game-button {
   font-family: var(--font-press-start);
-  font-size: 10px;
-  padding: 12px 24px;
-  border: 2px solid var(--primary);
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(244, 63, 94, 0.05));
+  font-size: 9px;
+  padding: 10px 20px;
+  border: 2px solid rgba(99, 102, 241, 0.5);
+  background: rgba(30, 41, 59, 0.8);
   color: var(--foreground);
   cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 10px;
+  transition: all 0.15s ease;
+  border-radius: 8px;
   position: relative;
-  overflow: hidden;
-}
-
-.game-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-  transition: left 0.4s ease;
-}
-
-.game-button:hover::before {
-  left: 100%;
 }
 
 .game-button:hover {
-  background: linear-gradient(135deg, var(--primary), var(--cta));
-  color: white;
-  box-shadow: 0 0 15px var(--primary), 0 0 30px var(--cta);
-  transform: translateY(-1px);
+  background: rgba(99, 102, 241, 0.3);
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .game-button:active {
-  transform: translateY(0) scale(0.97);
-  box-shadow: 0 0 8px var(--primary);
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.2);
 }
 
 .game-button:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+/* Primary Button */
+.game-button-primary {
+  background: linear-gradient(135deg, #4F46E5, #6366F1);
+  border-color: #6366F1;
+  color: white;
+}
+
+.game-button-primary:hover {
+  background: linear-gradient(135deg, #4338CA, #4F46E5);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+}
+
+/* Accent Button */
+.game-button-accent {
+  background: linear-gradient(135deg, #D97706, #F59E0B);
+  border-color: #F59E0B;
+  color: white;
+}
+
+.game-button-accent:hover {
+  background: linear-gradient(135deg, #B45309, #D97706);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
 }
 
 /* Responsive Typography */
@@ -205,8 +231,8 @@ body {
     font-size: 18px;
   }
   .game-button {
-    font-size: 9px;
-    padding: 10px 20px;
+    font-size: 8px;
+    padding: 9px 18px;
   }
 }
 
@@ -215,7 +241,7 @@ body {
     font-size: 16px;
   }
   .game-button {
-    font-size: 8px;
+    font-size: 7px;
     padding: 8px 16px;
   }
 }
