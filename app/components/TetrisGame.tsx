@@ -486,7 +486,7 @@ export default function TetrisGame() {
           </div>
 
           <div className="flex flex-col items-center gap-1 touch-none" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-            {renderGrid('min(260px, 88vw)')}
+            {renderGrid('min(200px, 75vw)')}
           </div>
 
           <div className="flex flex-col gap-1 items-center">
@@ -599,7 +599,7 @@ export default function TetrisGame() {
 
         <div className="flex flex-col items-center gap-3 md:gap-4 touch-none lg:order-2" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
           <h1 className="font-press-start text-xl md:text-2xl lg:text-3xl text-white text-glow-accent mb-1">TETRIS</h1>
-          {renderGrid('min(320px, 95vw)')}
+          {renderGrid('min(240px, 80vw)')}
           <div className="flex flex-col gap-3 md:gap-4 w-full max-w-md mt-3">
             <div className="flex justify-center gap-6 md:gap-8">
               <button
