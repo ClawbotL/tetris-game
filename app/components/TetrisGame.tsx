@@ -393,11 +393,11 @@ export default function TetrisGame() {
 
   const renderSmallPiece = (piece: Tetromino | null, size = 4) => {
     return (
-      <div className="grid gap-[1px] bg-slate-900/40 p-1 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
+      <div className="grid gap-[1px] bg-slate-900/40 p-1.5 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
         {Array.from({ length: size }).map((_, y) =>
           Array.from({ length: size }).map((_, x) => {
             if (!piece) {
-              return <div key={`${x}-${y}`} className="w-4 h-4 tetris-cell" />;
+              return <div key={`${x}-${y}`} className="w-5 h-5 tetris-cell" />;
             }
             const padLeft = Math.floor((size - piece.shape[0].length) / 2);
             const padTop = Math.floor((size - piece.shape.length) / 2);
@@ -413,7 +413,7 @@ export default function TetrisGame() {
             return (
               <div
                 key={`${x}-${y}`}
-                className={`w-4 h-4 tetris-cell rounded-sm ${cell ? `tetris-cell-filled-${cell}` : ''}`}
+                className={`w-5 h-5 tetris-cell rounded-sm ${cell ? `tetris-cell-filled-${cell}` : ''}`}
               />
             );
           })
