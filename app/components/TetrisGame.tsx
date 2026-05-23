@@ -391,13 +391,14 @@ export default function TetrisGame() {
     touchStartRef.current = null;
   };
 
-  const renderSmallPiece = (piece: Tetromino | null, size = 4) => {
+  const renderSmallPiece = (piece: Tetromino | null, size = 3) => {
+    const cellSize = size === 3 ? "w-4 h-4" : "w-5 h-5";
     return (
-      <div className="grid gap-[1px] p-1.5 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
+      <div className="grid gap-[1px] p-1 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
         {Array.from({ length: size }).map((_, y) =>
           Array.from({ length: size }).map((_, x) => {
             if (!piece) {
-              return <div key={`${x}-${y}`} className="w-5 h-5" />;
+              return <div key={`${x}-${y}`} className={cellSize} />;
             }
             const padLeft = Math.floor((size - piece.shape[0].length) / 2);
             const padTop = Math.floor((size - piece.shape.length) / 2);
@@ -413,7 +414,7 @@ export default function TetrisGame() {
             return (
               <div
                 key={`${x}-${y}`}
-                className={`w-5 h-5 rounded-sm ${cell ? `tetris-cell-filled-${cell}` : ''}`}
+                className={`${cellSize} rounded-sm ${cell ? `tetris-cell-filled-${cell}` : ''}`}
               />
             );
           })
@@ -474,9 +475,9 @@ export default function TetrisGame() {
         <h1 className="font-press-start text-lg text-white text-glow-accent mb-1">TETRIS</h1>
         <div className="flex flex-row gap-2 w-full justify-center">
           <div className="flex flex-col gap-1 items-center">
-            <div className="game-panel p-1.5 text-center aspect-square flex flex-col items-center justify-center">
-              <h2 className="font-press-start text-[6px] mb-1 text-slate-400">HOLD</h2>
-              {renderSmallPiece(holdPiece)}
+            <div className="game-panel p-1 text-center w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center">
+              <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">HOLD</h2>
+              {renderSmallPiece(holdPiece, 3)}
             </div>
             <div className="game-panel p-1.5 text-center">
               <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">SCORE</h2>
@@ -489,9 +490,9 @@ export default function TetrisGame() {
           </div>
 
           <div className="flex flex-col gap-1 items-center">
-            <div className="game-panel p-1.5 text-center aspect-square flex flex-col items-center justify-center">
-              <h2 className="font-press-start text-[6px] mb-1 text-slate-400">NEXT</h2>
-              {renderSmallPiece(nextPiece)}
+            <div className="game-panel p-1 text-center w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center">
+              <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">NEXT</h2>
+              {renderSmallPiece(nextPiece, 3)}
             </div>
             <div className="game-panel p-1.5 text-center">
               <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">LINES</h2>
@@ -559,9 +560,9 @@ export default function TetrisGame() {
             </button>
           </div>
 
-          <div className="flex justify-center gap-4 mt-1">
+          <div className="flex justify-center gap-3 mt-0">
             <button
-              className="game-button px-10 py-4 md:px-14 md:py-6 text-[12px] md:text-[14px] touch-none"
+              className="game-button px-8 py-3 md:px-12 md:py-5 text-[11px] md:text-[13px] touch-none"
               onClick={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
               onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
               disabled={gameOver}
@@ -569,7 +570,7 @@ export default function TetrisGame() {
               {isPaused ? 'RESUME' : 'PAUSE'}
             </button>
             <button
-              className="game-button game-button-accent px-10 py-4 md:px-14 md:py-6 text-[12px] md:text-[14px] touch-none"
+              className="game-button game-button-accent px-8 py-3 md:px-12 md:py-5 text-[11px] md:text-[13px] touch-none"
               onClick={(e) => { e.preventDefault(); resetGame(); }}
               onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
             >
@@ -582,9 +583,9 @@ export default function TetrisGame() {
       {/* Desktop Layout */}
       <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-4 md:gap-8 items-center justify-center hidden lg:flex flex-1">
         <div className="flex flex-col gap-3 w-full lg:w-auto lg:order-1">
-          <div className="game-panel p-2 md:p-3 text-center aspect-square flex flex-col items-center justify-center">
-            <h2 className="font-press-start text-[7px] md:text-[8px] mb-1 text-slate-400">HOLD</h2>
-            {renderSmallPiece(holdPiece)}
+          <div className="game-panel p-2 md:p-2 text-center w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 flex flex-col items-center justify-center">
+            <h2 className="font-press-start text-[7px] md:text-[8px] mb-0.5 text-slate-400">HOLD</h2>
+            {renderSmallPiece(holdPiece, 3)}
           </div>
           <div className="game-panel p-4 text-center">
             <h2 className="font-press-start text-[9px] md:text-[10px] mb-1 text-slate-400">SCORE</h2>
@@ -654,9 +655,9 @@ export default function TetrisGame() {
               </button>
             </div>
 
-            <div className="flex justify-center gap-4 md:gap-6 mt-1">
+            <div className="flex justify-center gap-3 md:gap-5 mt-0">
               <button
-                className="game-button px-12 py-5 md:px-16 md:py-7 text-[14px] md:text-[16px] lg:text-[18px] touch-none"
+                className="game-button px-10 py-4 md:px-14 md:py-6 text-[13px] md:text-[15px] lg:text-[17px] touch-none"
                 onClick={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
                 onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
                 disabled={gameOver}
@@ -664,7 +665,7 @@ export default function TetrisGame() {
                 {isPaused ? 'RESUME' : 'PAUSE'}
               </button>
               <button
-                className="game-button game-button-accent px-12 py-5 md:px-16 md:py-7 text-[14px] md:text-[16px] lg:text-[18px] touch-none"
+                className="game-button game-button-accent px-10 py-4 md:px-14 md:py-6 text-[13px] md:text-[15px] lg:text-[17px] touch-none"
                 onClick={(e) => { e.preventDefault(); resetGame(); }}
                 onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
               >
@@ -679,9 +680,9 @@ export default function TetrisGame() {
             <h2 className="font-press-start text-[7px] md:text-[8px] mb-1 text-slate-400">LINES</h2>
             <p className="font-vt323 text-3xl md:text-4xl text-emerald-300 font-bold">{linesCleared}</p>
           </div>
-          <div className="game-panel p-2 md:p-3 text-center aspect-square flex flex-col items-center justify-center">
-            <h2 className="font-press-start text-[7px] md:text-[8px] mb-1 text-slate-400">NEXT</h2>
-            {renderSmallPiece(nextPiece)}
+          <div className="game-panel p-2 md:p-2 text-center w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 flex flex-col items-center justify-center">
+            <h2 className="font-press-start text-[7px] md:text-[8px] mb-0.5 text-slate-400">NEXT</h2>
+            {renderSmallPiece(nextPiece, 3)}
           </div>
         </div>
       </div>
