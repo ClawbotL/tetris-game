@@ -348,7 +348,7 @@ export default function TetrisGame() {
 
   const renderSmallPiece = (piece: Tetromino | null, size = 4) => {
     return (
-      <div className="grid gap-[1px] bg-slate-900/40 p-2 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
+      <div className="grid gap-[1px] bg-slate-900/40 p-1.5 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
         {Array.from({ length: size }).map((_, y) =>
           Array.from({ length: size }).map((_, x) => {
             if (!piece) {
@@ -400,7 +400,7 @@ export default function TetrisGame() {
     });
 
     return (
-      <div className="grid gap-[1px] bg-slate-900/80 border border-slate-700/50 p-1 rounded-xl" style={{ gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`, width: 'min(170px, 70vw)' }}>
+      <div className="grid gap-[1px] bg-slate-900/80 border border-slate-700/50 p-1 rounded-xl" style={{ gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`, width: 'min(220px, 80vw)' }}>
         {displayGrid.map((row, y) =>
           row.map((cell, x) => {
             const isClearing = clearingRows.includes(y);
@@ -424,127 +424,275 @@ export default function TetrisGame() {
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-between p-2 md:p-4 select-none overflow-hidden">
-      {/* Top Section - Title + Hold/Next + Stats */}
-      <div className="w-full max-w-4xl flex flex-col gap-1 md:gap-2 items-center">
-        <h1 className="font-press-start text-lg md:text-2xl lg:text-3xl text-white text-glow-accent">TETRIS</h1>
+      {/* Mobile Layout (Small Screens) */}
+      <div className="flex flex-col gap-1 w-full items-center lg:hidden">
+        <h1 className="font-press-start text-lg text-white text-glow-accent mb-1">TETRIS</h1>
         
-        <div className="flex flex-row gap-2 md:gap-4 w-full justify-center items-start">
-          <div className="flex flex-col gap-1 md:gap-2 items-center">
-            <div className="game-panel p-2 text-center">
-              <h2 className="font-press-start text-[7px] md:text-[9px] mb-1 text-slate-400">HOLD</h2>
+        <div className="flex flex-row gap-2 w-full justify-center">
+          <div className="flex flex-col gap-1 items-center">
+            <div className="game-panel p-1.5 text-center">
+              <h2 className="font-press-start text-[6px] mb-1 text-slate-400">HOLD</h2>
               {renderSmallPiece(holdPiece)}
             </div>
-            <div className="game-panel p-2 text-center">
-              <h2 className="font-press-start text-[7px] md:text-[9px] mb-0.5 text-slate-400">SCORE</h2>
-              <p className="font-vt323 text-xl md:text-2xl text-indigo-300 font-bold">{score.toLocaleString()}</p>
+            <div className="game-panel p-1.5 text-center">
+              <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">SCORE</h2>
+              <p className="font-vt323 text-lg text-indigo-300 font-bold">{score.toLocaleString()}</p>
             </div>
           </div>
           
           <div
-            className="flex flex-col items-center gap-1 md:gap-2 touch-none"
+            className="flex flex-col items-center gap-1 touch-none"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
             {renderGrid()}
           </div>
           
-          <div className="flex flex-col gap-1 md:gap-2 items-center">
-            <div className="game-panel p-2 text-center">
-              <h2 className="font-press-start text-[7px] md:text-[9px] mb-1 text-slate-400">NEXT</h2>
+          <div className="flex flex-col gap-1 items-center">
+            <div className="game-panel p-1.5 text-center">
+              <h2 className="font-press-start text-[6px] mb-1 text-slate-400">NEXT</h2>
               {renderSmallPiece(nextPiece)}
             </div>
-            <div className="game-panel p-2 text-center">
-              <h2 className="font-press-start text-[7px] md:text-[9px] mb-0.5 text-slate-400">LINES</h2>
-              <p className="font-vt323 text-xl md:text-2xl text-emerald-300 font-bold">{linesCleared}</p>
+            <div className="game-panel p-1.5 text-center">
+              <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">LINES</h2>
+              <p className="font-vt323 text-lg text-emerald-300 font-bold">{linesCleared}</p>
             </div>
-            <div className="game-panel p-2 text-center">
-              <h2 className="font-press-start text-[7px] md:text-[9px] mb-0.5 text-slate-400">LEVEL</h2>
-              <p className="font-vt323 text-xl md:text-2xl text-indigo-300 font-bold">{level}</p>
+            <div className="game-panel p-1.5 text-center">
+              <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">LEVEL</h2>
+              <p className="font-vt323 text-lg text-indigo-300 font-bold">{level}</p>
             </div>
           </div>
         </div>
+        
+        <div className="flex flex-col gap-1 w-full max-w-xs items-center mt-1">
+          <div className="flex justify-center gap-1.5">
+            <button
+              className="game-button rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-base md:text-lg touch-none"
+              onClick={() => move(-1)}
+              onTouchStart={(e) => { e.preventDefault(); move(-1); }}
+              disabled={gameOver || isPaused || clearingRows.length > 0}
+            >
+              ←
+            </button>
+            <button
+              className="game-button rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-base md:text-lg touch-none"
+              onClick={rotate}
+              onTouchStart={(e) => { e.preventDefault(); rotate(); }}
+              disabled={gameOver || isPaused || clearingRows.length > 0}
+            >
+              ↻
+            </button>
+            <button
+              className="game-button rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-base md:text-lg touch-none"
+              onClick={() => move(1)}
+              onTouchStart={(e) => { e.preventDefault(); move(1); }}
+              disabled={gameOver || isPaused || clearingRows.length > 0}
+            >
+              →
+            </button>
+          </div>
+          
+          <div className="flex justify-center gap-1.5">
+            <button
+              className="game-button px-2 py-0.5 text-[6px] touch-none"
+              onClick={() => { setIsPaused(prev => !prev); }}
+              onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
+              disabled={gameOver}
+            >
+              {isPaused ? 'RESUME' : 'PAUSE'}
+            </button>
+            <button
+              className="game-button px-2 py-0.5 text-[6px] touch-none"
+              onClick={() => { drop(); setScore(prev => prev + 1); }}
+              onTouchStart={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
+              disabled={gameOver || isPaused || clearingRows.length > 0}
+            >
+              ↓
+            </button>
+            <button
+              className="game-button px-2 py-0.5 text-[6px] touch-none"
+              onClick={handleHold}
+              onTouchStart={(e) => { e.preventDefault(); handleHold(); }}
+              disabled={gameOver || isPaused || clearingRows.length > 0 || !canHold}
+            >
+              HOLD
+            </button>
+            <button
+              className="game-button game-button-primary px-2 py-0.5 text-[6px] touch-none"
+              onClick={hardDrop}
+              onTouchStart={(e) => { e.preventDefault(); hardDrop(); }}
+              disabled={gameOver || isPaused || clearingRows.length > 0}
+            >
+              DROP
+            </button>
+          </div>
+          
+          <button
+            className="game-button game-button-accent px-4 py-1.5 text-[7px] touch-none"
+            onClick={resetGame}
+            onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
+          >
+            NEW GAME
+          </button>
+        </div>
       </div>
       
-      {/* Bottom Section - Controls */}
-      <div className="flex flex-col gap-1 md:gap-2 w-full max-w-xs items-center mt-1">
-        <div className="flex justify-center gap-2 md:gap-4">
-          <button
-            className="game-button rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-xl touch-none"
-            onClick={() => move(-1)}
-            onTouchStart={(e) => { e.preventDefault(); move(-1); }}
-            disabled={gameOver || isPaused || clearingRows.length > 0}
-          >
-            ←
-          </button>
-          <button
-            className="game-button rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-xl touch-none"
-            onClick={rotate}
-            onTouchStart={(e) => { e.preventDefault(); rotate(); }}
-            disabled={gameOver || isPaused || clearingRows.length > 0}
-          >
-            ↻
-          </button>
-          <button
-            className="game-button rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-xl touch-none"
-            onClick={() => move(1)}
-            onTouchStart={(e) => { e.preventDefault(); move(1); }}
-            disabled={gameOver || isPaused || clearingRows.length > 0}
-          >
-            →
-          </button>
+      {/* Desktop Layout (Large Screens) */}
+      <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-4 md:gap-8 items-center justify-center hidden lg:flex">
+        <div className="flex flex-col gap-3 w-full lg:w-auto lg:order-1">
+          <div className="game-panel p-4 text-center">
+            <h2 className="font-press-start text-[9px] md:text-[10px] mb-2 text-slate-400">HOLD</h2>
+            {renderSmallPiece(holdPiece)}
+          </div>
+          
+          <div className="game-panel p-4 text-center">
+            <h2 className="font-press-start text-[9px] md:text-[10px] mb-1 text-slate-400">SCORE</h2>
+            <p className="font-vt323 text-3xl md:text-4xl text-indigo-300 font-bold">{score.toLocaleString()}</p>
+          </div>
+          
+          <div className="game-panel p-4 text-center">
+            <h2 className="font-press-start text-[9px] md:text-[10px] mb-1 text-slate-400">LEVEL</h2>
+            <p className="font-vt323 text-3xl md:text-4xl text-indigo-300 font-bold">{level}</p>
+          </div>
         </div>
-        
-        <div className="flex justify-center gap-2 md:gap-3">
-          <button
-            className="game-button px-3 py-1 md:px-4 md:py-2 text-[7px] md:text-[8px] touch-none"
-            onClick={() => { setIsPaused(prev => !prev); }}
-            onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
-            disabled={gameOver}
-          >
-            {isPaused ? 'RESUME' : 'PAUSE'}
-          </button>
-          <button
-            className="game-button px-3 py-1 md:px-4 md:py-2 text-[7px] md:text-[8px] touch-none"
-            onClick={() => { drop(); setScore(prev => prev + 1); }}
-            onTouchStart={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
-            disabled={gameOver || isPaused || clearingRows.length > 0}
-          >
-            ↓
-          </button>
-          <button
-            className="game-button px-3 py-1 md:px-4 md:py-2 text-[7px] md:text-[8px] touch-none"
-            onClick={handleHold}
-            onTouchStart={(e) => { e.preventDefault(); handleHold(); }}
-            disabled={gameOver || isPaused || clearingRows.length > 0 || !canHold}
-          >
-            HOLD
-          </button>
-          <button
-            className="game-button game-button-primary px-3 py-1 md:px-4 md:py-2 text-[7px] md:text-[8px] touch-none"
-            onClick={hardDrop}
-            onTouchStart={(e) => { e.preventDefault(); hardDrop(); }}
-            disabled={gameOver || isPaused || clearingRows.length > 0}
-          >
-            DROP
-          </button>
-        </div>
-        
-        <button
-          className="game-button game-button-accent px-5 py-2 md:px-6 md:py-3 text-[8px] md:text-[10px] touch-none"
-          onClick={resetGame}
-          onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
+
+        <div
+          className="flex flex-col items-center gap-3 md:gap-4 touch-none lg:order-2"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
-          NEW GAME
-        </button>
+          <h1 className="font-press-start text-xl md:text-2xl lg:text-3xl text-white text-glow-accent mb-1">TETRIS</h1>
+          
+          <div className="grid gap-[2px] bg-slate-900/80 border border-slate-700/50 p-2 rounded-xl" style={{ gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`, width: 'min(260px, 90vw)' }}>
+            {grid.map((row, y) => {
+              const displayRow = [...row];
+              const ghostPos = getGhostPosition(grid, currentPiece);
+              currentPiece.shape.forEach((pieceRow, py) => {
+                pieceRow.forEach((value, px) => {
+                  if (value !== 0 && ghostPos.y + py >= 0 && !displayRow[ghostPos.x + px]) {
+                    displayRow[ghostPos.x + px] = `ghost-${currentPiece.type}`;
+                  }
+                });
+              });
+              currentPiece.shape.forEach((pieceRow, py) => {
+                pieceRow.forEach((value, px) => {
+                  if (value !== 0 && currentPiece.pos.y + py >= 0) {
+                    displayRow[currentPiece.pos.x + px] = currentPiece.type;
+                  }
+                });
+              });
+              
+              return displayRow.map((cell, x) => {
+                const isClearing = clearingRows.includes(y);
+                let cellClass = '';
+                if (typeof cell === 'string' && cell.startsWith('ghost-')) {
+                  cellClass = `tetris-cell-ghost-${cell.replace('ghost-', '')}`;
+                } else if (cell) {
+                  cellClass = `tetris-cell-filled-${cell}`;
+                }
+                return (
+                  <div
+                    key={`${x}-${y}`}
+                    className={`w-full aspect-square tetris-cell rounded-sm ${cellClass} ${isClearing ? 'tetris-cell-clearing' : ''}`}
+                  />
+                );
+              });
+            })}
+          </div>
+          
+          <div className="flex flex-col gap-2 md:gap-3 w-full max-w-xs mt-2">
+            <div className="flex justify-center gap-4 md:gap-6">
+              <button
+                className="game-button rounded-full w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 flex items-center justify-center text-xl md:text-2xl touch-none"
+                onClick={() => move(-1)}
+                onTouchStart={(e) => { e.preventDefault(); move(-1); }}
+                disabled={gameOver || isPaused || clearingRows.length > 0}
+              >
+                ←
+              </button>
+              <button
+                className="game-button rounded-full w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 flex items-center justify-center text-xl md:text-2xl touch-none"
+                onClick={rotate}
+                onTouchStart={(e) => { e.preventDefault(); rotate(); }}
+                disabled={gameOver || isPaused || clearingRows.length > 0}
+              >
+                ↻
+              </button>
+              <button
+                className="game-button rounded-full w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 flex items-center justify-center text-xl md:text-2xl touch-none"
+                onClick={() => move(1)}
+                onTouchStart={(e) => { e.preventDefault(); move(1); }}
+                disabled={gameOver || isPaused || clearingRows.length > 0}
+              >
+                →
+              </button>
+            </div>
+            
+            <div className="flex justify-center gap-3 md:gap-4">
+              <button
+                className="game-button px-4 py-2 md:px-6 md:py-3 text-[8px] md:text-[9px] touch-none"
+                onClick={() => { setIsPaused(prev => !prev); }}
+                onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
+                disabled={gameOver}
+              >
+                {isPaused ? 'RESUME' : 'PAUSE'}
+              </button>
+              <button
+                className="game-button px-4 py-2 md:px-6 md:py-3 text-[8px] md:text-[9px] touch-none"
+                onClick={() => { drop(); setScore(prev => prev + 1); }}
+                onTouchStart={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
+                disabled={gameOver || isPaused || clearingRows.length > 0}
+              >
+                ↓
+              </button>
+              <button
+                className="game-button px-4 py-2 md:px-6 md:py-3 text-[8px] md:text-[9px] touch-none"
+                onClick={handleHold}
+                onTouchStart={(e) => { e.preventDefault(); handleHold(); }}
+                disabled={gameOver || isPaused || clearingRows.length > 0 || !canHold}
+              >
+                HOLD
+              </button>
+              <button
+                className="game-button game-button-primary px-4 py-2 md:px-6 md:py-3 text-[8px] md:text-[9px] touch-none"
+                onClick={hardDrop}
+                onTouchStart={(e) => { e.preventDefault(); hardDrop(); }}
+                disabled={gameOver || isPaused || clearingRows.length > 0}
+              >
+                DROP
+              </button>
+            </div>
+            
+            <button
+              className="game-button game-button-accent px-6 py-3 md:px-8 md:py-4 text-[10px] md:text-[11px] touch-none mt-1"
+              onClick={resetGame}
+              onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
+            >
+              NEW GAME
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 w-full lg:w-auto lg:order-3">
+          <div className="game-panel p-4 text-center">
+            <h2 className="font-press-start text-[9px] md:text-[10px] mb-1 text-slate-400">LINES</h2>
+            <p className="font-vt323 text-3xl md:text-4xl text-emerald-300 font-bold">{linesCleared}</p>
+          </div>
+          
+          <div className="game-panel p-4 text-center">
+            <h2 className="font-press-start text-[9px] md:text-[10px] mb-2 text-slate-400">NEXT</h2>
+            {renderSmallPiece(nextPiece)}
+          </div>
+        </div>
       </div>
 
       {gameOver && (
         <div className="fixed inset-0 bg-black/85 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="game-panel p-5 md:p-8 text-center border-2 border-red-500/30">
-            <h2 className="font-press-start text-lg md:text-2xl text-red-400 mb-4 text-glow-accent">GAME OVER</h2>
-            <p className="text-lg md:text-2xl mb-5 text-slate-300">Final Score: <span className="font-bold text-indigo-300">{score.toLocaleString()}</span></p>
+          <div className="game-panel p-6 md:p-10 text-center border-2 border-red-500/30">
+            <h2 className="font-press-start text-xl md:text-2xl text-red-400 mb-6 text-glow-accent">GAME OVER</h2>
+            <p className="text-xl md:text-3xl mb-6 text-slate-300">Final Score: <span className="font-bold text-indigo-300">{score.toLocaleString()}</span></p>
             <button
-              className="game-button game-button-accent px-6 py-3 md:px-8 md:py-4 text-[8px] md:text-[10px]"
+              className="game-button game-button-accent px-8 py-4 md:px-10 md:py-5 text-[10px] md:text-[11px]"
               onClick={resetGame}
               onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
             >
@@ -556,10 +704,10 @@ export default function TetrisGame() {
 
       {isPaused && !gameOver && (
         <div className="fixed inset-0 bg-black/85 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="game-panel p-5 md:p-8 text-center border-2 border-indigo-500/30">
-            <h2 className="font-press-start text-lg md:text-2xl text-indigo-300 mb-4 text-glow-primary">PAUSED</h2>
+          <div className="game-panel p-6 md:p-10 text-center border-2 border-indigo-500/30">
+            <h2 className="font-press-start text-xl md:text-2xl text-indigo-300 mb-6 text-glow-primary">PAUSED</h2>
             <button
-              className="game-button game-button-primary px-6 py-3 md:px-8 md:py-4 text-[8px] md:text-[10px]"
+              className="game-button game-button-primary px-8 py-4 md:px-10 md:py-5 text-[10px] md:text-[11px]"
               onClick={() => setIsPaused(false)}
               onTouchStart={(e) => { e.preventDefault(); setIsPaused(false); }}
             >
