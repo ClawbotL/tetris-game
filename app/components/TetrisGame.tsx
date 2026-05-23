@@ -377,7 +377,7 @@ export default function TetrisGame() {
     );
   };
 
-  const renderGrid = () => {
+  const renderGrid = (gridWidth: string = 'min(220px, 80vw)') => {
     const displayGrid = grid.map(row => [...row]);
     const ghostPos = getGhostPosition(grid, currentPiece);
     
@@ -400,7 +400,7 @@ export default function TetrisGame() {
     });
 
     return (
-      <div className="grid gap-[1px] bg-slate-900/80 border border-slate-700/50 p-1 rounded-xl" style={{ gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`, width: 'min(220px, 80vw)' }}>
+      <div className="grid gap-[1px] bg-slate-900/80 border border-slate-700/50 p-1 rounded-xl" style={{ gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`, width: gridWidth }}>
         {displayGrid.map((row, y) =>
           row.map((cell, x) => {
             const isClearing = clearingRows.includes(y);
@@ -445,7 +445,7 @@ export default function TetrisGame() {
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {renderGrid()}
+            {renderGrid('min(220px, 80vw)')}
           </div>
           
           <div className="flex flex-col gap-1 items-center">
@@ -563,42 +563,7 @@ export default function TetrisGame() {
         >
           <h1 className="font-press-start text-xl md:text-2xl lg:text-3xl text-white text-glow-accent mb-1">TETRIS</h1>
           
-          <div className="grid gap-[2px] bg-slate-900/80 border border-slate-700/50 p-2 rounded-xl" style={{ gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`, width: 'min(260px, 90vw)' }}>
-            {grid.map((row, y) => {
-              const displayRow = [...row];
-              const ghostPos = getGhostPosition(grid, currentPiece);
-              currentPiece.shape.forEach((pieceRow, py) => {
-                pieceRow.forEach((value, px) => {
-                  if (value !== 0 && ghostPos.y + py >= 0 && !displayRow[ghostPos.x + px]) {
-                    displayRow[ghostPos.x + px] = `ghost-${currentPiece.type}`;
-                  }
-                });
-              });
-              currentPiece.shape.forEach((pieceRow, py) => {
-                pieceRow.forEach((value, px) => {
-                  if (value !== 0 && currentPiece.pos.y + py >= 0) {
-                    displayRow[currentPiece.pos.x + px] = currentPiece.type;
-                  }
-                });
-              });
-              
-              return displayRow.map((cell, x) => {
-                const isClearing = clearingRows.includes(y);
-                let cellClass = '';
-                if (typeof cell === 'string' && cell.startsWith('ghost-')) {
-                  cellClass = `tetris-cell-ghost-${cell.replace('ghost-', '')}`;
-                } else if (cell) {
-                  cellClass = `tetris-cell-filled-${cell}`;
-                }
-                return (
-                  <div
-                    key={`${x}-${y}`}
-                    className={`w-full aspect-square tetris-cell rounded-sm ${cellClass} ${isClearing ? 'tetris-cell-clearing' : ''}`}
-                  />
-                );
-              });
-            })}
-          </div>
+          {renderGrid('min(260px, 90vw)')}
           
           <div className="flex flex-col gap-2 md:gap-3 w-full max-w-xs mt-2">
             <div className="flex justify-center gap-4 md:gap-6">
