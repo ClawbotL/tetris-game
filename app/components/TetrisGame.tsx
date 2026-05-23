@@ -145,8 +145,13 @@ export default function TetrisGame() {
     setIsPaused(false);
     setClearingRows([]);
     dropIntervalRef.current = 1000;
+    lastDropTimeRef.current = performance.now();
     lastActionTimeRef.current = 0;
   }, []);
+
+  useEffect(() => {
+    resetGame();
+  }, [resetGame]);
 
   const lockPiece = useCallback(() => {
     const grid = gridRef.current;
