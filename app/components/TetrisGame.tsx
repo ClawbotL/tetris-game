@@ -391,10 +391,10 @@ export default function TetrisGame() {
     touchStartRef.current = null;
   };
 
-  const renderSmallPiece = (piece: Tetromino | null, size = 3) => {
-    const cellSize = size === 3 ? "w-4 h-4" : "w-5 h-5";
+  const renderSmallPiece = (piece: Tetromino | null, size = 2) => {
+    const cellSize = size === 2 ? "w-3 h-3" : size === 3 ? "w-4 h-4" : "w-5 h-5";
     return (
-      <div className="grid gap-[1px] p-1 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
+      <div className="grid gap-[1px] p-0.5 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
         {Array.from({ length: size }).map((_, y) =>
           Array.from({ length: size }).map((_, x) => {
             if (!piece) {
@@ -475,9 +475,9 @@ export default function TetrisGame() {
         <h1 className="font-press-start text-lg text-white text-glow-accent mb-1">TETRIS</h1>
         <div className="flex flex-row gap-2 w-full justify-center">
           <div className="flex flex-col gap-1 items-center">
-            <div className="game-panel p-1 text-center w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center">
-              <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">HOLD</h2>
-              {renderSmallPiece(holdPiece, 3)}
+            <div className="game-panel p-0.5 text-center w-14 h-14 md:w-16 md:h-16 flex flex-col items-center justify-center">
+              <h2 className="font-press-start text-[5px] mb-0 text-slate-400">HOLD</h2>
+              {renderSmallPiece(holdPiece, 2)}
             </div>
             <div className="game-panel p-1.5 text-center">
               <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">SCORE</h2>
@@ -486,13 +486,13 @@ export default function TetrisGame() {
           </div>
 
           <div className="flex flex-col items-center gap-1 touch-none" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-            {renderGrid('min(200px, 75vw)')}
+            {renderGrid('min(240px, 85vw)')}
           </div>
 
           <div className="flex flex-col gap-1 items-center">
-            <div className="game-panel p-1 text-center w-20 h-20 md:w-24 md:h-24 flex flex-col items-center justify-center">
-              <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">NEXT</h2>
-              {renderSmallPiece(nextPiece, 3)}
+            <div className="game-panel p-0.5 text-center w-14 h-14 md:w-16 md:h-16 flex flex-col items-center justify-center">
+              <h2 className="font-press-start text-[5px] mb-0 text-slate-400">NEXT</h2>
+              {renderSmallPiece(nextPiece, 2)}
             </div>
             <div className="game-panel p-1.5 text-center">
               <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">LINES</h2>
@@ -583,9 +583,9 @@ export default function TetrisGame() {
       {/* Desktop Layout */}
       <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-4 md:gap-8 items-center justify-center hidden lg:flex flex-1">
         <div className="flex flex-col gap-3 w-full lg:w-auto lg:order-1">
-          <div className="game-panel p-2 md:p-2 text-center w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 flex flex-col items-center justify-center">
-            <h2 className="font-press-start text-[7px] md:text-[8px] mb-0.5 text-slate-400">HOLD</h2>
-            {renderSmallPiece(holdPiece, 3)}
+          <div className="game-panel p-1 md:p-1 text-center w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 flex flex-col items-center justify-center">
+            <h2 className="font-press-start text-[6px] md:text-[7px] mb-0 text-slate-400">HOLD</h2>
+            {renderSmallPiece(holdPiece, 2)}
           </div>
           <div className="game-panel p-4 text-center">
             <h2 className="font-press-start text-[9px] md:text-[10px] mb-1 text-slate-400">SCORE</h2>
@@ -599,7 +599,7 @@ export default function TetrisGame() {
 
         <div className="flex flex-col items-center gap-3 md:gap-4 touch-none lg:order-2" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
           <h1 className="font-press-start text-xl md:text-2xl lg:text-3xl text-white text-glow-accent mb-1">TETRIS</h1>
-          {renderGrid('min(240px, 80vw)')}
+          {renderGrid('min(300px, 90vw)')}
           <div className="flex flex-col gap-3 md:gap-4 w-full max-w-md mt-3">
             <div className="flex justify-center gap-6 md:gap-8">
               <button
@@ -680,9 +680,9 @@ export default function TetrisGame() {
             <h2 className="font-press-start text-[7px] md:text-[8px] mb-1 text-slate-400">LINES</h2>
             <p className="font-vt323 text-3xl md:text-4xl text-emerald-300 font-bold">{linesCleared}</p>
           </div>
-          <div className="game-panel p-2 md:p-2 text-center w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 flex flex-col items-center justify-center">
-            <h2 className="font-press-start text-[7px] md:text-[8px] mb-0.5 text-slate-400">NEXT</h2>
-            {renderSmallPiece(nextPiece, 3)}
+          <div className="game-panel p-1 md:p-1 text-center w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 flex flex-col items-center justify-center">
+            <h2 className="font-press-start text-[6px] md:text-[7px] mb-0 text-slate-400">NEXT</h2>
+            {renderSmallPiece(nextPiece, 2)}
           </div>
         </div>
       </div>
