@@ -241,6 +241,7 @@ export default function TetrisGame() {
     const grid = gridRef.current;
     const currentPiece = currentPieceRef.current;
     const score = scoreRef.current;
+    if (!currentPiece) return;
 
     let dropAmount = 0;
     while (!checkCollision(grid, currentPiece, 0, dropAmount + 1)) {
