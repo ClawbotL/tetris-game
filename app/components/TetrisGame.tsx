@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
+// Define Tetromino shapes and colors
 const SHAPES = {
   I: { shape: [[1, 1, 1, 1]], color: '#22D3EE' },
   O: { shape: [[1, 1], [1, 1]], color: '#FACC15' },
@@ -76,6 +77,7 @@ const checkCollision = (
   return false;
 };
 
+// Calculate ghost piece position (where piece would land)
 const getGhostPosition = (grid: (string | null)[][], piece: Tetromino) => {
   let dropAmount = 0;
   while (!checkCollision(grid, piece, 0, dropAmount + 1)) {
@@ -96,17 +98,47 @@ export default function TetrisGame() {
   const [isPaused, setIsPaused] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [clearingRows, setClearingRows] = useState<number[]>([]);
+  
+  // Refs to keep track of latest values in closures
+  const gridRef = useRef(grid);
+  const currentPieceRef = useRef(currentPiece);
+  const nextPieceRef = useRef(nextPiece);
+  const holdPieceRef = useRef(holdPiece);
+  const scoreRef = useRef(score);
+  const linesClearedRef = useRef(linesCleared);
+  const levelRef = useRef(level);
+  const isPausedRef = useRef(isPaused);
+  const gameOverRef = useRef(gameOver);
+  const clearingRowsRef = useRef(clearingRows);
+  
   const dropIntervalRef = useRef(1000);
   const lastDropTimeRef = useRef<number>(0);
   const requestRef = useRef<number | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastActionTimeRef = useRef(0);
-  const actionCooldown = 100;
+  const actionCooldown = 100; // 100ms cooldown between actions to prevent double triggers
+
+  // Update refs whenever state changes
+  useEffect(() => {
+    gridRef.current = grid;
+    currentPieceRef.current = currentPiece;
+    nextPieceRef.current = nextPiece;
+    holdPieceRef.current = holdPiece;
+    scoreRef.current = score;
+    linesClearedRef.current = linesCleared;
+    levelRef.current = level;
+    isPausedRef.current = isPaused;
+    gameOverRef.current = gameOver;
+    clearingRowsRef.current = clearingRows;
+  }, [grid, currentPiece, nextPiece, holdPiece, score, linesCleared, level, isPaused, gameOver, clearingRows]);
 
   const resetGame = useCallback(() => {
-    setGrid(createEmptyGrid());
-    setCurrentPiece(randomTetromino());
-    setNextPiece(randomTetromino());
+    const newGrid = createEmptyGrid();
+    const newPiece = randomTetromino();
+    const newNext = randomTetromino();
+    setGrid(newGrid);
+    setCurrentPiece(newPiece);
+    setNextPiece(newNext);
     setHoldPiece(null);
     setCanHold(true);
     setScore(0);
@@ -120,6 +152,11 @@ export default function TetrisGame() {
   }, []);
 
   const lockPiece = useCallback(() => {
+    const grid = gridRef.current;
+    const currentPiece = currentPieceRef.current;
+    const nextPiece = nextPieceRef.current;
+    const level = levelRef.current;
+
     setGrid(prevGrid => {
       const newGrid = prevGrid.map(row => [...row]);
       currentPiece.shape.forEach((row, y) => {
@@ -130,6 +167,7 @@ export default function TetrisGame() {
         });
       });
 
+      // Find lines to clear
       const linesToClear: number[] = [];
       newGrid.forEach((row, y) => {
         if (row.every(cell => cell !== null)) {
@@ -138,8 +176,10 @@ export default function TetrisGame() {
       });
 
       if (linesToClear.length > 0) {
+        // Show clearing animation first
         setClearingRows(linesToClear);
         
+        // Wait for animation before clearing lines
         setTimeout(() => {
           setGrid(prev => {
             const clearedGrid = prev.filter((_, y) => !linesToClear.includes(y));
@@ -163,64 +203,82 @@ export default function TetrisGame() {
         }, 250);
       }
 
-      setCurrentPiece(nextPiece);
+      const newCurrent = randomTetromino();
+      setCurrentPiece(newCurrent);
       setNextPiece(randomTetromino());
       setCanHold(true);
 
-      if (linesToClear.length === 0 && checkCollision(newGrid, nextPiece)) {
+      // Check game over
+      if (linesToClear.length === 0 && checkCollision(newGrid, newCurrent)) {
         setGameOver(true);
       }
 
       return newGrid;
     });
-  }, [currentPiece, nextPiece, level]);
+  }, []);
 
   const drop = useCallback(() => {
     const now = Date.now();
-    if (now - lastActionTimeRef.current < actionCooldown || clearingRows.length > 0) return;
+    if (now - lastActionTimeRef.current < actionCooldown) return;
+    if (isPausedRef.current || gameOverRef.current || clearingRowsRef.current.length > 0) return;
     lastActionTimeRef.current = now;
+    
+    const grid = gridRef.current;
+    const currentPiece = currentPieceRef.current;
     
     if (!checkCollision(grid, currentPiece, 0, 1)) {
       setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, y: prev.pos.y + 1 } }));
     } else {
       lockPiece();
     }
-  }, [grid, currentPiece, lockPiece, clearingRows]);
+  }, [lockPiece]);
 
   const hardDrop = useCallback(() => {
     const now = Date.now();
-    if (now - lastActionTimeRef.current < actionCooldown || clearingRows.length > 0) return;
+    if (now - lastActionTimeRef.current < actionCooldown) return;
+    if (isPausedRef.current || gameOverRef.current || clearingRowsRef.current.length > 0) return;
     lastActionTimeRef.current = now;
+    
+    const grid = gridRef.current;
+    const currentPiece = currentPieceRef.current;
+    const score = scoreRef.current;
     
     let dropAmount = 0;
     while (!checkCollision(grid, currentPiece, 0, dropAmount + 1)) {
       dropAmount++;
     }
+    // Update position first, then lock immediately
     setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, y: prev.pos.y + dropAmount } }));
-    setScore(prev => prev + dropAmount * 2);
+    setScore(score + dropAmount * 2);
+    // Use setTimeout to let React update the state first before locking
     setTimeout(() => lockPiece(), 0);
-  }, [grid, currentPiece, lockPiece, clearingRows]);
+  }, [lockPiece]);
 
-  const move = useCallback(
-    (dir: number) => {
-      const now = Date.now();
-      if (now - lastActionTimeRef.current < actionCooldown || clearingRows.length > 0) return;
-      lastActionTimeRef.current = now;
-      
-      if (!checkCollision(grid, currentPiece, dir, 0)) {
-        setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, x: prev.pos.x + dir } }));
-      }
-    },
-    [grid, currentPiece, clearingRows]
-  );
+  const move = useCallback((dir: number) => {
+    const now = Date.now();
+    if (now - lastActionTimeRef.current < actionCooldown) return;
+    if (isPausedRef.current || gameOverRef.current || clearingRowsRef.current.length > 0) return;
+    lastActionTimeRef.current = now;
+    
+    const grid = gridRef.current;
+    const currentPiece = currentPieceRef.current;
+    
+    if (!checkCollision(grid, currentPiece, dir, 0)) {
+      setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, x: prev.pos.x + dir } }));
+    }
+  }, []);
 
   const rotate = useCallback(() => {
     const now = Date.now();
-    if (now - lastActionTimeRef.current < actionCooldown || clearingRows.length > 0) return;
+    if (now - lastActionTimeRef.current < actionCooldown) return;
+    if (isPausedRef.current || gameOverRef.current || clearingRowsRef.current.length > 0) return;
     lastActionTimeRef.current = now;
     
+    const grid = gridRef.current;
+    const currentPiece = currentPieceRef.current;
     const rotated = rotateMatrix(currentPiece.shape);
     const newPiece = { ...currentPiece, shape: rotated };
+    // Wall kick
     const kicks = [0, -1, 1, -2, 2];
     for (const kick of kicks) {
       if (!checkCollision(grid, { ...newPiece, pos: { ...newPiece.pos, x: newPiece.pos.x + kick } })) {
@@ -228,28 +286,32 @@ export default function TetrisGame() {
         return;
       }
     }
-  }, [grid, currentPiece, clearingRows]);
+  }, []);
 
   const handleHold = useCallback(() => {
-    if (!canHold || clearingRows.length > 0) return;
+    if (!canHold || isPausedRef.current || gameOverRef.current || clearingRowsRef.current.length > 0) return;
+    
+    const currentPiece = currentPieceRef.current;
+    const holdPiece = holdPieceRef.current;
+    const nextPiece = nextPieceRef.current;
     
     if (holdPiece) {
-      const temp = { ...currentPiece };
+      // Swap current and hold
+      setHoldPiece(currentPiece);
       setCurrentPiece({ ...holdPiece, pos: { x: Math.floor(GRID_WIDTH / 2) - Math.floor(holdPiece.shape[0].length / 2), y: 0 } });
-      setHoldPiece(temp);
     } else {
+      // Hold current piece, get new next piece
       setHoldPiece(currentPiece);
       setCurrentPiece(nextPiece);
       setNextPiece(randomTetromino());
     }
     setCanHold(false);
-  }, [currentPiece, nextPiece, holdPiece, canHold, clearingRows]);
-
-  const gameLoopRef = useRef<((time: number) => void) | null>(null);
+  }, [canHold]);
 
   const gameLoop = useCallback(
     (time: number) => {
-      if (gameOver || isPaused || clearingRows.length > 0) {
+      if (gameOverRef.current || isPausedRef.current || clearingRowsRef.current.length > 0) {
+        requestRef.current = requestAnimationFrame(gameLoop);
         return;
       }
 
@@ -258,14 +320,10 @@ export default function TetrisGame() {
         lastDropTimeRef.current = time;
       }
 
-      requestRef.current = requestAnimationFrame(gameLoopRef.current!);
+      requestRef.current = requestAnimationFrame(gameLoop);
     },
-    [gameOver, isPaused, drop, clearingRows]
+    [drop]
   );
-
-  useEffect(() => {
-    gameLoopRef.current = gameLoop;
-  }, [gameLoop]);
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(gameLoop);
@@ -278,12 +336,12 @@ export default function TetrisGame() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameOver) return;
+      if (gameOverRef.current) return;
       if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
         setIsPaused(prev => !prev);
         return;
       }
-      if (isPaused || clearingRows.length > 0) return;
+      if (isPausedRef.current || clearingRowsRef.current.length > 0) return;
 
       switch (e.key) {
         case 'ArrowLeft':
@@ -312,7 +370,7 @@ export default function TetrisGame() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameOver, isPaused, move, drop, hardDrop, rotate, handleHold, clearingRows]);
+  }, [move, drop, hardDrop, rotate, handleHold]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     e.preventDefault();
@@ -322,7 +380,7 @@ export default function TetrisGame() {
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     e.preventDefault();
-    if (gameOver || isPaused || !touchStartRef.current || clearingRows.length > 0) return;
+    if (gameOverRef.current || isPausedRef.current || !touchStartRef.current || clearingRowsRef.current.length > 0) return;
     const touch = e.changedTouches[0];
     const deltaX = touch.clientX - touchStartRef.current.x;
     const deltaY = touch.clientY - touchStartRef.current.y;
@@ -346,6 +404,7 @@ export default function TetrisGame() {
     touchStartRef.current = null;
   };
 
+  // Render a single piece (for hold/next)
   const renderSmallPiece = (piece: Tetromino | null, size = 4) => {
     return (
       <div className="grid gap-[1px] bg-slate-900/40 p-1.5 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
@@ -377,10 +436,12 @@ export default function TetrisGame() {
     );
   };
 
+  // Render grid
   const renderGrid = (gridWidth: string = 'min(220px, 80vw)') => {
     const displayGrid = grid.map(row => [...row]);
     const ghostPos = getGhostPosition(grid, currentPiece);
     
+    // Draw ghost piece first
     currentPiece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value !== 0 && ghostPos.y + y >= 0) {
@@ -391,6 +452,7 @@ export default function TetrisGame() {
       });
     });
     
+    // Draw current piece
     currentPiece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value !== 0 && currentPiece.pos.y + y >= 0) {
@@ -464,27 +526,27 @@ export default function TetrisGame() {
           </div>
         </div>
         
-        <div className="flex flex-col gap-1 w-full max-w-xs items-center mt-1">
-          <div className="flex justify-center gap-1.5">
+        <div className="flex flex-col gap-1.5 w-full max-w-xs items-center mt-1.5">
+          <div className="flex justify-center gap-2">
             <button
-              className="game-button rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-base md:text-lg touch-none"
-              onClick={() => move(-1)}
+              className="game-button rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-xl touch-none"
+              onClick={(e) => { e.preventDefault(); move(-1); }}
               onTouchStart={(e) => { e.preventDefault(); move(-1); }}
               disabled={gameOver || isPaused || clearingRows.length > 0}
             >
               ←
             </button>
             <button
-              className="game-button rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-base md:text-lg touch-none"
-              onClick={rotate}
+              className="game-button rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-xl touch-none"
+              onClick={(e) => { e.preventDefault(); rotate(); }}
               onTouchStart={(e) => { e.preventDefault(); rotate(); }}
               disabled={gameOver || isPaused || clearingRows.length > 0}
             >
               ↻
             </button>
             <button
-              className="game-button rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-base md:text-lg touch-none"
-              onClick={() => move(1)}
+              className="game-button rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-xl touch-none"
+              onClick={(e) => { e.preventDefault(); move(1); }}
               onTouchStart={(e) => { e.preventDefault(); move(1); }}
               disabled={gameOver || isPaused || clearingRows.length > 0}
             >
@@ -492,34 +554,34 @@ export default function TetrisGame() {
             </button>
           </div>
           
-          <div className="flex justify-center gap-1.5">
+          <div className="flex justify-center gap-2">
             <button
-              className="game-button px-2 py-0.5 text-[6px] touch-none"
-              onClick={() => { setIsPaused(prev => !prev); }}
+              className="game-button px-3 py-1.5 md:px-4 md:py-2 text-[7px] md:text-[8px] touch-none"
+              onClick={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
               onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
               disabled={gameOver}
             >
               {isPaused ? 'RESUME' : 'PAUSE'}
             </button>
             <button
-              className="game-button px-2 py-0.5 text-[6px] touch-none"
-              onClick={() => { drop(); setScore(prev => prev + 1); }}
+              className="game-button px-3 py-1.5 md:px-4 md:py-2 text-[7px] md:text-[8px] touch-none"
+              onClick={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
               onTouchStart={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
               disabled={gameOver || isPaused || clearingRows.length > 0}
             >
               ↓
             </button>
             <button
-              className="game-button px-2 py-0.5 text-[6px] touch-none"
-              onClick={handleHold}
+              className="game-button px-3 py-1.5 md:px-4 md:py-2 text-[7px] md:text-[8px] touch-none"
+              onClick={(e) => { e.preventDefault(); handleHold(); }}
               onTouchStart={(e) => { e.preventDefault(); handleHold(); }}
               disabled={gameOver || isPaused || clearingRows.length > 0 || !canHold}
             >
               HOLD
             </button>
             <button
-              className="game-button game-button-primary px-2 py-0.5 text-[6px] touch-none"
-              onClick={hardDrop}
+              className="game-button game-button-primary px-3 py-1.5 md:px-4 md:py-2 text-[7px] md:text-[8px] touch-none"
+              onClick={(e) => { e.preventDefault(); hardDrop(); }}
               onTouchStart={(e) => { e.preventDefault(); hardDrop(); }}
               disabled={gameOver || isPaused || clearingRows.length > 0}
             >
@@ -528,8 +590,8 @@ export default function TetrisGame() {
           </div>
           
           <button
-            className="game-button game-button-accent px-4 py-1.5 text-[7px] touch-none"
-            onClick={resetGame}
+            className="game-button game-button-accent px-5 py-2 md:px-6 md:py-3 text-[8px] md:text-[10px] touch-none"
+            onClick={(e) => { e.preventDefault(); resetGame(); }}
             onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
           >
             NEW GAME
@@ -569,7 +631,7 @@ export default function TetrisGame() {
             <div className="flex justify-center gap-4 md:gap-6">
               <button
                 className="game-button rounded-full w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 flex items-center justify-center text-xl md:text-2xl touch-none"
-                onClick={() => move(-1)}
+                onClick={(e) => { e.preventDefault(); move(-1); }}
                 onTouchStart={(e) => { e.preventDefault(); move(-1); }}
                 disabled={gameOver || isPaused || clearingRows.length > 0}
               >
@@ -577,7 +639,7 @@ export default function TetrisGame() {
               </button>
               <button
                 className="game-button rounded-full w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 flex items-center justify-center text-xl md:text-2xl touch-none"
-                onClick={rotate}
+                onClick={(e) => { e.preventDefault(); rotate(); }}
                 onTouchStart={(e) => { e.preventDefault(); rotate(); }}
                 disabled={gameOver || isPaused || clearingRows.length > 0}
               >
@@ -585,7 +647,7 @@ export default function TetrisGame() {
               </button>
               <button
                 className="game-button rounded-full w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 flex items-center justify-center text-xl md:text-2xl touch-none"
-                onClick={() => move(1)}
+                onClick={(e) => { e.preventDefault(); move(1); }}
                 onTouchStart={(e) => { e.preventDefault(); move(1); }}
                 disabled={gameOver || isPaused || clearingRows.length > 0}
               >
@@ -596,7 +658,7 @@ export default function TetrisGame() {
             <div className="flex justify-center gap-3 md:gap-4">
               <button
                 className="game-button px-4 py-2 md:px-6 md:py-3 text-[8px] md:text-[9px] touch-none"
-                onClick={() => { setIsPaused(prev => !prev); }}
+                onClick={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
                 onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
                 disabled={gameOver}
               >
@@ -604,7 +666,7 @@ export default function TetrisGame() {
               </button>
               <button
                 className="game-button px-4 py-2 md:px-6 md:py-3 text-[8px] md:text-[9px] touch-none"
-                onClick={() => { drop(); setScore(prev => prev + 1); }}
+                onClick={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
                 onTouchStart={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
                 disabled={gameOver || isPaused || clearingRows.length > 0}
               >
@@ -612,7 +674,7 @@ export default function TetrisGame() {
               </button>
               <button
                 className="game-button px-4 py-2 md:px-6 md:py-3 text-[8px] md:text-[9px] touch-none"
-                onClick={handleHold}
+                onClick={(e) => { e.preventDefault(); handleHold(); }}
                 onTouchStart={(e) => { e.preventDefault(); handleHold(); }}
                 disabled={gameOver || isPaused || clearingRows.length > 0 || !canHold}
               >
@@ -620,7 +682,7 @@ export default function TetrisGame() {
               </button>
               <button
                 className="game-button game-button-primary px-4 py-2 md:px-6 md:py-3 text-[8px] md:text-[9px] touch-none"
-                onClick={hardDrop}
+                onClick={(e) => { e.preventDefault(); hardDrop(); }}
                 onTouchStart={(e) => { e.preventDefault(); hardDrop(); }}
                 disabled={gameOver || isPaused || clearingRows.length > 0}
               >
@@ -630,7 +692,7 @@ export default function TetrisGame() {
             
             <button
               className="game-button game-button-accent px-6 py-3 md:px-8 md:py-4 text-[10px] md:text-[11px] touch-none mt-1"
-              onClick={resetGame}
+              onClick={(e) => { e.preventDefault(); resetGame(); }}
               onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
             >
               NEW GAME
@@ -651,6 +713,7 @@ export default function TetrisGame() {
         </div>
       </div>
 
+      {/* Game Over Overlay */}
       {gameOver && (
         <div className="fixed inset-0 bg-black/85 flex items-center justify-center z-50 backdrop-blur-sm">
           <div className="game-panel p-6 md:p-10 text-center border-2 border-red-500/30">
@@ -658,7 +721,7 @@ export default function TetrisGame() {
             <p className="text-xl md:text-3xl mb-6 text-slate-300">Final Score: <span className="font-bold text-indigo-300">{score.toLocaleString()}</span></p>
             <button
               className="game-button game-button-accent px-8 py-4 md:px-10 md:py-5 text-[10px] md:text-[11px]"
-              onClick={resetGame}
+              onClick={(e) => { e.preventDefault(); resetGame(); }}
               onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
             >
               PLAY AGAIN
@@ -667,13 +730,14 @@ export default function TetrisGame() {
         </div>
       )}
 
+      {/* Pause Overlay */}
       {isPaused && !gameOver && (
         <div className="fixed inset-0 bg-black/85 flex items-center justify-center z-50 backdrop-blur-sm">
           <div className="game-panel p-6 md:p-10 text-center border-2 border-indigo-500/30">
             <h2 className="font-press-start text-xl md:text-2xl text-indigo-300 mb-6 text-glow-primary">PAUSED</h2>
             <button
               className="game-button game-button-primary px-8 py-4 md:px-10 md:py-5 text-[10px] md:text-[11px]"
-              onClick={() => setIsPaused(false)}
+              onClick={(e) => { e.preventDefault(); setIsPaused(false); }}
               onTouchStart={(e) => { e.preventDefault(); setIsPaused(false); }}
             >
               RESUME
