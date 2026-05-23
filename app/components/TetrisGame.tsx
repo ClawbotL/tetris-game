@@ -99,8 +99,8 @@ export default function TetrisGame() {
   const [clearingRows, setClearingRows] = useState<number[]>([]);
 
   const gridRef = useRef(grid);
-  const currentPieceRef = useRef(currentPiece);
-  const nextPieceRef = useRef(nextPiece);
+  const currentPieceRef = useRef<Tetromino | null>(currentPiece);
+  const nextPieceRef = useRef<Tetromino | null>(nextPiece);
   const holdPieceRef = useRef(holdPiece);
   const scoreRef = useRef(score);
   const linesClearedRef = useRef(linesCleared);
@@ -226,7 +226,7 @@ export default function TetrisGame() {
     if (!currentPiece) return;
 
     if (!checkCollision(grid, currentPiece, 0, 1)) {
-      setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, y: prev.pos.y + 1 } }));
+      setCurrentPiece({ ...currentPiece, pos: { ...currentPiece.pos, y: currentPiece.pos.y + 1 } });
     } else {
       lockPiece();
     }
@@ -246,7 +246,7 @@ export default function TetrisGame() {
     while (!checkCollision(grid, currentPiece, 0, dropAmount + 1)) {
       dropAmount++;
     }
-    setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, y: prev.pos.y + dropAmount } }));
+    setCurrentPiece({ ...currentPiece, pos: { ...currentPiece.pos, y: currentPiece.pos.y + dropAmount } });
     setScore(score + dropAmount * 2);
     setTimeout(() => lockPiece(), 0);
   }, [lockPiece]);
@@ -260,8 +260,9 @@ export default function TetrisGame() {
     const grid = gridRef.current;
     const currentPiece = currentPieceRef.current;
 
+    if (!currentPiece) return;
     if (!checkCollision(grid, currentPiece, dir, 0)) {
-      setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, x: prev.pos.x + dir } }));
+      setCurrentPiece({ ...currentPiece, pos: { ...currentPiece.pos, x: currentPiece.pos.x + dir } });
     }
   }, []);
 
@@ -273,6 +274,7 @@ export default function TetrisGame() {
 
     const grid = gridRef.current;
     const currentPiece = currentPieceRef.current;
+    if (!currentPiece) return;
     const rotated = rotateMatrix(currentPiece.shape);
     const newPiece = { ...currentPiece, shape: rotated };
     const kicks = [0, -1, 1, -2, 2];
@@ -290,6 +292,7 @@ export default function TetrisGame() {
     const currentPiece = currentPieceRef.current;
     const holdPiece = holdPieceRef.current;
     const nextPiece = nextPieceRef.current;
+    if (!currentPiece || !nextPiece) return;
 
     if (holdPiece) {
       setHoldPiece({ ...currentPiece, pos: { x: Math.floor(GRID_WIDTH / 2) - Math.floor(currentPiece.shape[0].length / 2), y: 0 } });
@@ -304,7 +307,7 @@ export default function TetrisGame() {
 
   const gameLoop = useCallback(
     (time: number) => {
-      if (gameOverRef.current || isPausedRef.current || clearingRowsRef.current.length > 0) {
+      if (gameOverRef.current || isPausedRef.current || clearingRowsRef.current.length > 0 || !currentPieceRef.current) {
         requestRef.current = requestAnimationFrame(gameLoop);
         return;
       }
