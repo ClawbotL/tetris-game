@@ -391,7 +391,7 @@ export default function TetrisGame() {
     touchStartRef.current = null;
   };
 
-  const renderSmallPiece = (piece: Tetromino | null, size = 3) => {
+  const renderSmallPiece = (piece: Tetromino | null, size = 4) => {
     return (
       <div className="grid gap-[1px] bg-slate-900/40 p-1 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
         {Array.from({ length: size }).map((_, y) =>
@@ -474,8 +474,8 @@ export default function TetrisGame() {
         <h1 className="font-press-start text-lg text-white text-glow-accent mb-1">TETRIS</h1>
         <div className="flex flex-row gap-2 w-full justify-center">
           <div className="flex flex-col gap-1 items-center">
-            <div className="game-panel p-1 text-center">
-              <h2 className="font-press-start text-[5px] mb-1 text-slate-400">HOLD</h2>
+            <div className="game-panel p-1.5 text-center">
+              <h2 className="font-press-start text-[6px] mb-1 text-slate-400">HOLD</h2>
               {renderSmallPiece(holdPiece)}
             </div>
             <div className="game-panel p-1.5 text-center">
@@ -489,8 +489,8 @@ export default function TetrisGame() {
           </div>
 
           <div className="flex flex-col gap-1 items-center">
-            <div className="game-panel p-1 text-center">
-              <h2 className="font-press-start text-[5px] mb-1 text-slate-400">NEXT</h2>
+            <div className="game-panel p-1.5 text-center">
+              <h2 className="font-press-start text-[6px] mb-1 text-slate-400">NEXT</h2>
               {renderSmallPiece(nextPiece)}
             </div>
             <div className="game-panel p-1.5 text-center">
