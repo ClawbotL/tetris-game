@@ -87,8 +87,8 @@ const getGhostPosition = (grid: (string | null)[][], piece: Tetromino) => {
 
 export default function TetrisGame() {
   const [grid, setGrid] = useState<(string | null)[][]>(createEmptyGrid());
-  const [currentPiece, setCurrentPiece] = useState<Tetromino>(randomTetromino());
-  const [nextPiece, setNextPiece] = useState<Tetromino>(randomTetromino());
+  const [currentPiece, setCurrentPiece] = useState<Tetromino | null>(null);
+  const [nextPiece, setNextPiece] = useState<Tetromino | null>(null);
   const [holdPiece, setHoldPiece] = useState<Tetromino | null>(null);
   const [canHold, setCanHold] = useState(true);
   const [score, setScore] = useState(0);
@@ -158,6 +158,7 @@ export default function TetrisGame() {
     const currentPiece = currentPieceRef.current;
     const nextPiece = nextPieceRef.current;
     const level = levelRef.current;
+    if (!currentPiece || !nextPiece) return;
 
     setGrid(prevGrid => {
       const newGrid = prevGrid.map(row => [...row]);
@@ -222,6 +223,7 @@ export default function TetrisGame() {
 
     const grid = gridRef.current;
     const currentPiece = currentPieceRef.current;
+    if (!currentPiece) return;
 
     if (!checkCollision(grid, currentPiece, 0, 1)) {
       setCurrentPiece(prev => ({ ...prev, pos: { ...prev.pos, y: prev.pos.y + 1 } }));
@@ -398,13 +400,21 @@ export default function TetrisGame() {
 
   const renderSmallPiece = (piece: Tetromino | null, size = 4) => {
     const cellSize = "w-2.5 h-2.5"; // Smaller cells to fit in same box size
+    if (!piece) {
+      return (
+        <div className="grid gap-[0.5px] p-0 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
+          {Array.from({ length: size }).map((_, y) =>
+            Array.from({ length: size }).map((_, x) => (
+              <div key={`${x}-${y}`} className={cellSize} />
+            ))
+          )}
+        </div>
+      );
+    }
     return (
       <div className="grid gap-[0.5px] p-0 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
         {Array.from({ length: size }).map((_, y) =>
           Array.from({ length: size }).map((_, x) => {
-            if (!piece) {
-              return <div key={`${x}-${y}`} className={cellSize} />;
-            }
             const padLeft = Math.floor((size - piece.shape[0].length) / 2);
             const padTop = Math.floor((size - piece.shape.length) / 2);
             const cellY = y - padTop;
@@ -430,25 +440,27 @@ export default function TetrisGame() {
 
   const renderGrid = (gridWidth: string = 'min(260px, 88vw)') => {
     const displayGrid = grid.map(row => [...row]);
-    if (level === 1) {
-      const ghostPos = getGhostPosition(grid, currentPiece);
+    if (currentPiece) {
+      if (level === 1) {
+        const ghostPos = getGhostPosition(grid, currentPiece);
+        currentPiece.shape.forEach((row, y) => {
+          row.forEach((value, x) => {
+            if (value !== 0 && ghostPos.y + y >= 0) {
+              if (!displayGrid[ghostPos.y + y][ghostPos.x + x]) {
+                displayGrid[ghostPos.y + y][ghostPos.x + x] = `ghost-${currentPiece.type}`;
+              }
+            }
+          });
+        });
+      }
       currentPiece.shape.forEach((row, y) => {
         row.forEach((value, x) => {
-          if (value !== 0 && ghostPos.y + y >= 0) {
-            if (!displayGrid[ghostPos.y + y][ghostPos.x + x]) {
-              displayGrid[ghostPos.y + y][ghostPos.x + x] = `ghost-${currentPiece.type}`;
-            }
+          if (value !== 0 && currentPiece.pos.y + y >= 0) {
+            displayGrid[currentPiece.pos.y + y][currentPiece.pos.x + x] = currentPiece.type;
           }
         });
       });
     }
-    currentPiece.shape.forEach((row, y) => {
-      row.forEach((value, x) => {
-        if (value !== 0 && currentPiece.pos.y + y >= 0) {
-          displayGrid[currentPiece.pos.y + y][currentPiece.pos.x + x] = currentPiece.type;
-        }
-      });
-    });
 
     return (
       <div className="grid gap-[1px] bg-slate-900/80 border border-slate-700/50 p-1 rounded-xl" style={{ gridTemplateColumns: `repeat(${GRID_WIDTH}, minmax(0, 1fr))`, width: gridWidth }}>
