@@ -438,18 +438,21 @@ export default function TetrisGame() {
   // Render grid
   const renderGrid = (gridWidth: string = 'min(220px, 80vw)') => {
     const displayGrid = grid.map(row => [...row]);
-    const ghostPos = getGhostPosition(grid, currentPiece);
     
-    // Draw ghost piece first
-    currentPiece.shape.forEach((row, y) => {
-      row.forEach((value, x) => {
-        if (value !== 0 && ghostPos.y + y >= 0) {
-          if (!displayGrid[ghostPos.y + y][ghostPos.x + x]) {
-            displayGrid[ghostPos.y + y][ghostPos.x + x] = `ghost-${currentPiece.type}`;
+    // Only draw ghost/guide piece in LEVEL 1
+    if (level === 1) {
+      const ghostPos = getGhostPosition(grid, currentPiece);
+      // Draw ghost piece
+      currentPiece.shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value !== 0 && ghostPos.y + y >= 0) {
+            if (!displayGrid[ghostPos.y + y][ghostPos.x + x]) {
+              displayGrid[ghostPos.y + y][ghostPos.x + x] = `ghost-${currentPiece.type}`;
+            }
           }
-        }
+        });
       });
-    });
+    }
     
     // Draw current piece
     currentPiece.shape.forEach((row, y) => {
