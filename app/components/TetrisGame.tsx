@@ -414,7 +414,7 @@ export default function TetrisGame() {
             return (
               <div
                 key={`${x}-${y}`}
-                className={`${cellSize} rounded-sm ${cell ? `tetris-cell-filled-${cell}` : ''}`}
+                className={`${cellSize} ${cell ? `tetris-cell-filled-${cell}` : ''}`}
               />
             );
           })
