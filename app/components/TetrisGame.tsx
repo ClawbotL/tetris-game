@@ -36,7 +36,7 @@ const randomTetromino = (): Tetromino => {
     shape,
     color,
     type,
-    pos: { x: Math.floor(GRID_WIDTH / 2) - Math.floor(shape[0].length / 2), y: 0 },
+    pos: { x: Math.floor(GRID_WIDTH / 2) - Math.floor(shape[0].length / 2), y: -(shape.length - 1) },
   };
 };
 
@@ -391,10 +391,10 @@ export default function TetrisGame() {
     touchStartRef.current = null;
   };
 
-  const renderSmallPiece = (piece: Tetromino | null, size = 2) => {
-    const cellSize = size === 2 ? "w-3 h-3" : size === 3 ? "w-4 h-4" : "w-5 h-5";
+  const renderSmallPiece = (piece: Tetromino | null, size = 4) => {
+    const cellSize = "w-2.5 h-2.5"; // Smaller cells to fit in same box size
     return (
-      <div className="grid gap-[1px] p-0.5 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
+      <div className="grid gap-[0.5px] p-0 rounded-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
         {Array.from({ length: size }).map((_, y) =>
           Array.from({ length: size }).map((_, x) => {
             if (!piece) {
@@ -477,7 +477,7 @@ export default function TetrisGame() {
           <div className="flex flex-col gap-1 items-center">
             <div className="game-panel p-0.5 text-center w-14 h-14 md:w-16 md:h-16 flex flex-col items-center justify-center">
               <h2 className="font-press-start text-[5px] mb-0 text-slate-400">HOLD</h2>
-              {renderSmallPiece(holdPiece, 2)}
+              {renderSmallPiece(holdPiece, 4)}
             </div>
             <div className="game-panel p-1.5 text-center">
               <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">SCORE</h2>
@@ -492,7 +492,7 @@ export default function TetrisGame() {
           <div className="flex flex-col gap-1 items-center">
             <div className="game-panel p-0.5 text-center w-14 h-14 md:w-16 md:h-16 flex flex-col items-center justify-center">
               <h2 className="font-press-start text-[5px] mb-0 text-slate-400">NEXT</h2>
-              {renderSmallPiece(nextPiece, 2)}
+              {renderSmallPiece(nextPiece, 4)}
             </div>
             <div className="game-panel p-1.5 text-center">
               <h2 className="font-press-start text-[6px] mb-0.5 text-slate-400">LINES</h2>
@@ -585,7 +585,7 @@ export default function TetrisGame() {
         <div className="flex flex-col gap-3 w-full lg:w-auto lg:order-1">
           <div className="game-panel p-1 md:p-1 text-center w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 flex flex-col items-center justify-center">
             <h2 className="font-press-start text-[6px] md:text-[7px] mb-0 text-slate-400">HOLD</h2>
-            {renderSmallPiece(holdPiece, 2)}
+            {renderSmallPiece(holdPiece, 4)}
           </div>
           <div className="game-panel p-4 text-center">
             <h2 className="font-press-start text-[9px] md:text-[10px] mb-1 text-slate-400">SCORE</h2>
@@ -682,7 +682,7 @@ export default function TetrisGame() {
           </div>
           <div className="game-panel p-1 md:p-1 text-center w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 flex flex-col items-center justify-center">
             <h2 className="font-press-start text-[6px] md:text-[7px] mb-0 text-slate-400">NEXT</h2>
-            {renderSmallPiece(nextPiece, 2)}
+            {renderSmallPiece(nextPiece, 4)}
           </div>
         </div>
       </div>
