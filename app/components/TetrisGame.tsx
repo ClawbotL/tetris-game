@@ -36,7 +36,7 @@ const randomTetromino = (): Tetromino => {
     shape,
     color,
     type,
-    pos: { x: Math.floor(GRID_WIDTH / 2) - Math.floor(shape[0].length / 2), y: -(shape.length - 1) },
+    pos: { x: Math.floor(GRID_WIDTH / 2) - Math.floor(shape[0].length / 2), y: -1 },
   };
 };
 
