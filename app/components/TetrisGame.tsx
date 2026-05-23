@@ -493,7 +493,7 @@ export default function TetrisGame() {
     <div className="h-screen w-full flex flex-col items-center justify-between p-2 md:p-4 select-none overflow-hidden relative">
       {/* Mobile Layout */}
       <div className="flex flex-col gap-1 w-full items-center lg:hidden flex-1">
-        <h1 className="font-press-start text-lg text-white text-glow-accent mb-1">TETRIS</h1>
+        <h1 className="font-press-start text-xl md:text-2xl text-white text-glow-accent mb-2">TETRIS</h1>
         <div className="flex flex-row gap-2 w-full justify-center">
           <div className="flex flex-col gap-1 items-center">
             <div className="game-panel p-0.5 text-center w-14 h-14 md:w-16 md:h-16 flex flex-col items-center justify-center">
@@ -619,7 +619,7 @@ export default function TetrisGame() {
         </div>
 
         <div className="flex flex-col items-center gap-3 md:gap-4 touch-none lg:order-2" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-          <h1 className="font-press-start text-xl md:text-2xl lg:text-3xl text-white text-glow-accent mb-1">TETRIS</h1>
+          <h1 className="font-press-start text-2xl md:text-3xl lg:text-4xl text-white text-glow-accent mb-2">TETRIS</h1>
           {renderGrid('min(300px, 90vw)')}
           <div className="flex flex-col gap-3 md:gap-4 w-full max-w-md mt-3">
             <div className="flex justify-center gap-6 md:gap-8">
