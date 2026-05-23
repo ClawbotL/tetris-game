@@ -203,13 +203,12 @@ export default function TetrisGame() {
         }, 250);
       }
 
-      const newCurrent = randomTetromino();
-      setCurrentPiece(newCurrent);
+      setCurrentPiece(nextPiece);
       setNextPiece(randomTetromino());
       setCanHold(true);
 
       // Check game over
-      if (linesToClear.length === 0 && checkCollision(newGrid, newCurrent)) {
+      if (linesToClear.length === 0 && checkCollision(newGrid, nextPiece)) {
         setGameOver(true);
       }
 
@@ -297,11 +296,11 @@ export default function TetrisGame() {
     
     if (holdPiece) {
       // Swap current and hold
-      setHoldPiece(currentPiece);
+      setHoldPiece({ ...currentPiece, pos: { x: Math.floor(GRID_WIDTH / 2) - Math.floor(currentPiece.shape[0].length / 2), y: 0 } });
       setCurrentPiece({ ...holdPiece, pos: { x: Math.floor(GRID_WIDTH / 2) - Math.floor(holdPiece.shape[0].length / 2), y: 0 } });
     } else {
       // Hold current piece, get new next piece
-      setHoldPiece(currentPiece);
+      setHoldPiece({ ...currentPiece, pos: { x: Math.floor(GRID_WIDTH / 2) - Math.floor(currentPiece.shape[0].length / 2), y: 0 } });
       setCurrentPiece(nextPiece);
       setNextPiece(randomTetromino());
     }
@@ -554,17 +553,9 @@ export default function TetrisGame() {
             </button>
           </div>
           
-          <div className="flex justify-center gap-3">
+          <div className="flex justify-center gap-4">
             <button
-              className="game-button px-5 py-3 md:px-8 md:py-4 text-[10px] md:text-[12px] touch-none"
-              onClick={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
-              onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
-              disabled={gameOver}
-            >
-              {isPaused ? 'RESUME' : 'PAUSE'}
-            </button>
-            <button
-              className="game-button px-5 py-3 md:px-8 md:py-4 text-[10px] md:text-[12px] touch-none"
+              className="game-button px-7 py-4 md:px-10 md:py-5 text-[12px] md:text-[14px] touch-none"
               onClick={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
               onTouchStart={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
               disabled={gameOver || isPaused || clearingRows.length > 0}
@@ -572,7 +563,7 @@ export default function TetrisGame() {
               ↓
             </button>
             <button
-              className="game-button px-5 py-3 md:px-8 md:py-4 text-[10px] md:text-[12px] touch-none"
+              className="game-button px-7 py-4 md:px-10 md:py-5 text-[12px] md:text-[14px] touch-none"
               onClick={(e) => { e.preventDefault(); handleHold(); }}
               onTouchStart={(e) => { e.preventDefault(); handleHold(); }}
               disabled={gameOver || isPaused || clearingRows.length > 0 || !canHold}
@@ -580,7 +571,7 @@ export default function TetrisGame() {
               HOLD
             </button>
             <button
-              className="game-button game-button-primary px-5 py-3 md:px-8 md:py-4 text-[10px] md:text-[12px] touch-none"
+              className="game-button game-button-primary px-7 py-4 md:px-10 md:py-5 text-[12px] md:text-[14px] touch-none"
               onClick={(e) => { e.preventDefault(); hardDrop(); }}
               onTouchStart={(e) => { e.preventDefault(); hardDrop(); }}
               disabled={gameOver || isPaused || clearingRows.length > 0}
@@ -589,13 +580,23 @@ export default function TetrisGame() {
             </button>
           </div>
           
-          <button
-            className="game-button game-button-accent px-10 py-4 md:px-12 md:py-5 text-[12px] md:text-[14px] touch-none mt-1"
-            onClick={(e) => { e.preventDefault(); resetGame(); }}
-            onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
-          >
-            NEW GAME
-          </button>
+          <div className="flex justify-center gap-4">
+            <button
+              className="game-button px-7 py-4 md:px-10 md:py-5 text-[12px] md:text-[14px] touch-none"
+              onClick={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
+              onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
+              disabled={gameOver}
+            >
+              {isPaused ? 'RESUME' : 'PAUSE'}
+            </button>
+            <button
+              className="game-button game-button-accent px-10 py-4 md:px-12 md:py-5 text-[12px] md:text-[14px] touch-none"
+              onClick={(e) => { e.preventDefault(); resetGame(); }}
+              onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
+            >
+              NEW GAME
+            </button>
+          </div>
         </div>
       </div>
       
@@ -627,7 +628,7 @@ export default function TetrisGame() {
           
           {renderGrid('min(260px, 90vw)')}
           
-          <div className="flex flex-col gap-2 md:gap-3 w-full max-w-xs mt-2">
+          <div className="flex flex-col gap-2 md:gap-3 w-full max-w-md mt-2">
             <div className="flex justify-center gap-4 md:gap-6">
               <button
                 className="game-button rounded-full w-14 h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 flex items-center justify-center text-2xl md:text-3xl touch-none"
@@ -655,17 +656,9 @@ export default function TetrisGame() {
               </button>
             </div>
             
-            <div className="flex justify-center gap-3 md:gap-4">
+            <div className="flex justify-center gap-4 md:gap-6">
               <button
-                className="game-button px-5 py-3 md:px-8 md:py-4 text-[10px] md:text-[12px] touch-none"
-                onClick={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
-                onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
-                disabled={gameOver}
-              >
-                {isPaused ? 'RESUME' : 'PAUSE'}
-              </button>
-              <button
-                className="game-button px-5 py-3 md:px-8 md:py-4 text-[10px] md:text-[12px] touch-none"
+                className="game-button px-7 py-4 md:px-10 md:py-5 text-[12px] md:text-[14px] touch-none"
                 onClick={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
                 onTouchStart={(e) => { e.preventDefault(); drop(); setScore(prev => prev + 1); }}
                 disabled={gameOver || isPaused || clearingRows.length > 0}
@@ -673,7 +666,7 @@ export default function TetrisGame() {
                 ↓
               </button>
               <button
-                className="game-button px-5 py-3 md:px-8 md:py-4 text-[10px] md:text-[12px] touch-none"
+                className="game-button px-7 py-4 md:px-10 md:py-5 text-[12px] md:text-[14px] touch-none"
                 onClick={(e) => { e.preventDefault(); handleHold(); }}
                 onTouchStart={(e) => { e.preventDefault(); handleHold(); }}
                 disabled={gameOver || isPaused || clearingRows.length > 0 || !canHold}
@@ -681,7 +674,7 @@ export default function TetrisGame() {
                 HOLD
               </button>
               <button
-                className="game-button game-button-primary px-5 py-3 md:px-8 md:py-4 text-[10px] md:text-[12px] touch-none"
+                className="game-button game-button-primary px-7 py-4 md:px-10 md:py-5 text-[12px] md:text-[14px] touch-none"
                 onClick={(e) => { e.preventDefault(); hardDrop(); }}
                 onTouchStart={(e) => { e.preventDefault(); hardDrop(); }}
                 disabled={gameOver || isPaused || clearingRows.length > 0}
@@ -690,13 +683,23 @@ export default function TetrisGame() {
               </button>
             </div>
             
-            <button
-              className="game-button game-button-accent px-10 py-4 md:px-12 md:py-5 text-[12px] md:text-[14px] touch-none mt-1"
-              onClick={(e) => { e.preventDefault(); resetGame(); }}
-              onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
-            >
-              NEW GAME
-            </button>
+            <div className="flex justify-center gap-4 md:gap-6">
+              <button
+                className="game-button px-7 py-4 md:px-10 md:py-5 text-[12px] md:text-[14px] touch-none"
+                onClick={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
+                onTouchStart={(e) => { e.preventDefault(); setIsPaused(prev => !prev); }}
+                disabled={gameOver}
+              >
+                {isPaused ? 'RESUME' : 'PAUSE'}
+              </button>
+              <button
+                className="game-button game-button-accent px-10 py-4 md:px-12 md:py-5 text-[12px] md:text-[14px] touch-none"
+                onClick={(e) => { e.preventDefault(); resetGame(); }}
+                onTouchStart={(e) => { e.preventDefault(); resetGame(); }}
+              >
+                NEW GAME
+              </button>
+            </div>
           </div>
         </div>
 
